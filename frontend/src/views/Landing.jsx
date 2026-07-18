@@ -1,62 +1,108 @@
 import { useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
-import { riseIn } from '../lib/anim.js';
+import { riseIn, prefersReduced } from '../lib/anim.js';
 import './landing.css';
 
+gsap.registerPlugin(ScrollTrigger);
+
 const ACTORS = [
-  { dot: 'var(--dot-startup)', title: 'Startups', desc: 'Ideas seeking momentum' },
-  { dot: 'var(--dot-vc)', title: 'Venture Capital', desc: 'Capital with a thesis' },
-  { dot: 'var(--dot-corp)', title: 'Corporations', desc: 'Scale and distribution' },
-  { dot: 'var(--dot-uni)', title: 'Universities', desc: 'Talent and licensable IP' },
-  { dot: 'var(--dot-research)', title: 'Research', desc: 'Deep expertise' },
-  { dot: 'var(--dot-gov)', title: 'Government', desc: 'Policy and programs' },
+  { dot: 'var(--dot-startup)', title: 'Startups', desc: 'Ideas seeking momentum and the right first partner.' },
+  { dot: 'var(--dot-vc)', title: 'Venture capital', desc: 'Capital with a thesis, looking for stage-fit deals.' },
+  { dot: 'var(--dot-corp)', title: 'Corporations', desc: 'Scale, distribution, and a pipeline of new technology.' },
+  { dot: 'var(--dot-uni)', title: 'Universities', desc: 'Talent, research depth, and licensable IP.' },
+  { dot: 'var(--dot-research)', title: 'Research institutes', desc: 'Deep expertise ready to leave the lab.' },
+  { dot: 'var(--dot-gov)', title: 'Government', desc: 'Policy, programs, and public-sector demand.' },
 ];
 
-const STEPS = [
+const GUARANTEES = [
   {
-    n: '01',
     title: 'Its reasoning',
-    body: 'Why this match, why now, and why not the others — stated in plain language before you commit attention.',
+    body: 'Why this match, why now, and why not the others, in plain language before you spend attention on it.',
   },
   {
-    n: '02',
     title: 'Its evidence',
-    body: "Every claim carries a source, a confidence, and a date. Where we don't know, we say so — never invented.",
+    body: 'Every claim carries a source, a confidence, and a date. Where we do not know something, we say so instead of inventing it.',
   },
   {
-    n: '03',
     title: 'The path to outcome',
-    body: 'From a scored match to a bilingual introduction to a human-reviewed handshake — the full route, one step at a time.',
+    body: 'From a scored match to a bilingual introduction to a human-reviewed handshake, laid out one step at a time.',
   },
 ];
 
-const BARS = [
-  { label: 'Sector fit', pct: 95, score: 95 },
-  { label: 'Stage fit', pct: 85, score: 85 },
-  { label: 'Geography', pct: 80, score: 80 },
+const REASONS = [
+  { k: 'Sector fit', val: 'Agritech thesis overlaps enfarm on soil and yield sensing.' },
+  { k: 'Stage fit', val: 'Seed target sits inside the fund’s active check range.' },
+  { k: 'Timing', val: 'Fund is deploying this quarter; a tax-credit window is open.' },
 ];
 
 export default function Landing({ onEnter }) {
   const rootRef = useRef(null);
 
-  useGSAP(() => {
-    if (rootRef.current) riseIn(rootRef.current);
-  }, { scope: rootRef });
+  useGSAP(
+    () => {
+      const root = rootRef.current;
+      if (!root) return;
+
+      // Hero load-in
+      riseIn(root);
+
+      if (prefersReduced()) return;
+
+      // Scroll reveals per section block
+      gsap.utils.toArray('.vn-reveal').forEach((el) => {
+        gsap.from(el, {
+          y: 26,
+          autoAlpha: 0,
+          duration: 0.7,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 82%' },
+        });
+      });
+
+      // Sticky nav hairline
+      ScrollTrigger.create({
+        start: 'top -8',
+        onUpdate: (self) => {
+          const nav = root.querySelector('.vn-nav');
+          if (nav) nav.classList.toggle('is-stuck', self.scroll() > 8);
+        },
+      });
+
+      // Score count-up (motivated: draws the eye to the key fit number)
+      gsap.utils.toArray('[data-count]').forEach((el) => {
+        const to = Number(el.dataset.count);
+        const obj = { v: 0 };
+        gsap.to(obj, {
+          v: to,
+          duration: 1.1,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 88%' },
+          onUpdate: () => {
+            el.firstChild.textContent = Math.round(obj.v);
+          },
+        });
+      });
+
+      ScrollTrigger.refresh();
+    },
+    { scope: rootRef }
+  );
 
   return (
     <div className="vn-landing" id="top" ref={rootRef}>
-      <header className="vn-landing-header">
-        <a href="#top" className="vn-landing-brand">
+      <header className="vn-nav">
+        <a href="#top" className="vn-nav-brand">
           <img src="/logo.png" alt="VietNexus" />
-          <span className="vn-landing-lockup">
+          <span className="vn-nav-lockup">
             <b>VietNexus</b>
             <small>INNOVATION OS</small>
           </span>
         </a>
-        <nav className="vn-landing-nav">
-          <a href="#how">How it works</a>
-          <a href="#actors">Ecosystem</a>
-          <a href="#match">Explained match</a>
+        <nav className="vn-nav-links">
+          <a href="#ecosystem">Ecosystem</a>
+          <a href="#explained">How it works</a>
           <button type="button" className="btn btn-primary" onClick={onEnter}>
             Open the app
           </button>
@@ -68,166 +114,177 @@ export default function Landing({ onEnter }) {
         <section className="vn-hero">
           <div className="vn-hero-inner">
             <div>
-              <div className="vn-hero-badge rise">
-                <span className="dot" />
-                An operating system, not a directory
-              </div>
+              <span className="vn-eyebrow vn-hero-eyebrow rise">Innovation OS for Vietnam</span>
               <h1 className="rise">
-                AI <span className="accent">Vietnam's</span> innovation ecosystem
+                Vietnam&rsquo;s innovation ecosystem, matched with{' '}
+                <em>the reasoning shown</em>.
               </h1>
               <p className="vn-hero-lede rise">
-                VietNexus connects startups with venture capital, corporations, and universities
-                through explainable AI matches. Every recommendation opens with its reasoning, its
-                evidence, and the path from introduction to outcome.
+                VietNexus connects startups with the investors, corporates, and universities that
+                fit, and shows why before you commit.
               </p>
               <div className="vn-hero-cta rise">
-                <button type="button" className="btn btn-primary btn-lg btn-hero" onClick={onEnter}>
-                  Start your journey <span className="btn-arrow">→</span>
+                <button type="button" className="btn btn-primary btn-lg" onClick={onEnter}>
+                  Open the app <span className="btn-arrow">&rarr;</span>
                 </button>
-                <a href="#match" className="btn btn-ghost btn-lg btn-hero">
-                  See a live explained match
+                <a href="#explained" className="btn btn-ghost btn-lg">
+                  See how a match is explained
                 </a>
               </div>
-            </div>
-
-            <div className="vn-lp-card rise">
-              <div className="card-eyebrow">Explained match</div>
-              <div className="vn-lp-org">
-                <span className="vn-lp-avatar" style={{ background: '#2f9e78' }}>LV</span>
-                <div>
-                  <div className="name">Loopwell — healthtech, seed</div>
-                  <div className="meta">Founded Hanoi, 2024</div>
-                </div>
-              </div>
-              <div className="vn-lp-evidence">
-                <div className="vn-lp-tags">
-                  <span className="vn-lp-tag">Stage match</span>
-                  <span className="vn-lp-tag">2 prior healthtech deals</span>
-                </div>
-                <p>
-                  Evidence: portfolio overlap with 3 seed healthtech rounds in 2025, avg. check size
-                  within founder's target range.
-                </p>
-              </div>
-              <div className="vn-lp-org">
-                <span className="vn-lp-avatar" style={{ background: '#c07a34' }}>MC</span>
-                <div>
-                  <div className="name">Mekong Capital Partners</div>
-                  <div className="meta">Seed · Healthtech, SaaS</div>
-                </div>
+              <div className="vn-hero-meta rise">
+                <span>Explainable matches, sources included.</span>
+                <span className="vn-hero-flags">
+                  <b>VI</b>
+                  <b>EN</b>
+                </span>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* ACTORS */}
-        <section id="actors" className="vn-landing-wrap">
-          <div className="eyebrow-up rise">One ecosystem · six actors</div>
-          <h2 className="serif-h2 rise">
-            Knowledge flows between the people who build the future together.
-          </h2>
-          <div className="vn-actor-grid">
-            {ACTORS.map((a) => (
-              <div className="vn-actor rise" key={a.title}>
-                <span className="dot" style={{ background: a.dot }} />
-                <div className="title">{a.title}</div>
-                <div className="desc">{a.desc}</div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* HOW */}
-        <section id="how" className="vn-landing-wrap">
-          <div className="eyebrow-up rise">Every recommendation, in the open</div>
-          <h2 className="serif-h2 rise">Not a black box. A recommendation you can question.</h2>
-          <div className="vn-how-grid">
-            {STEPS.map((s) => (
-              <div className="vn-how-card rise" key={s.n}>
-                <div className="vn-how-num">{s.n}</div>
-                <h3>{s.title}</h3>
-                <p>{s.body}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* LIVE EXPLAINED MATCH */}
-        <section id="match" className="vn-landing-wrap">
-          <div className="vn-live-grid">
-            <div>
-              <div className="eyebrow-up rise">A live explained match</div>
-              <h2 className="serif-h2 rise">
-                See exactly why two organisations belong at the same table.
-              </h2>
-              <p className="vn-live-lede rise">
-                A fit score is only the beginning. VietNexus shows the breakdown behind it, the
-                sources it stands on, and the introduction it can draft — in Vietnamese or English.
-              </p>
-              <button type="button" className="btn btn-primary btn-lg rise" onClick={onEnter}>
-                Start your journey <span className="btn-arrow">→</span>
-              </button>
-            </div>
-
-            <div className="vn-lp-card rise">
-              <div className="vn-live-head">
-                <div>
-                  <div className="vn-live-kicker">
-                    <span className="dot" style={{ background: 'var(--dot-vc)' }} />
-                    Venture Capital
+            {/* Compact match preview — a real VietNexus match, sample organisations */}
+            <div className="vn-mc rise">
+              <div className="vn-mc-cap">A match, in brief</div>
+              <div className="vn-mc-pair">
+                <div className="vn-org">
+                  <span className="vn-org-mark" style={{ background: '#2f9e78' }}>LV</span>
+                  <div>
+                    <div className="name">Loopwell</div>
+                    <div className="meta">Healthtech seed · Hanoi, 2024</div>
                   </div>
-                  <div className="vn-live-title">enfarm × Touchstone Partners</div>
                 </div>
-                <div className="vn-live-score">89</div>
+                <div className="vn-mc-link">
+                  <span>Portfolio overlap with three 2025 seed healthtech rounds.</span>
+                </div>
+                <div className="vn-org">
+                  <span className="vn-org-mark" style={{ background: '#b26f34' }}>MC</span>
+                  <div>
+                    <div className="name">Mekong Capital Partners</div>
+                    <div className="meta">Seed · Healthtech, SaaS</div>
+                  </div>
+                </div>
               </div>
-              <div className="vn-bars">
-                {BARS.map((b) => (
-                  <div className="vn-bar" key={b.label}>
-                    <span>{b.label}</span>
-                    <span className="vn-bar-track">
-                      <i className="vn-bar-fill" style={{ width: `${b.pct}%` }} />
-                    </span>
-                    <b>{b.score}</b>
+              <div className="vn-mc-fit">
+                <span className="label">Fit score</span>
+                <span className="vn-mc-score" data-count="88">
+                  <span>88</span>
+                  <sub>/100</sub>
+                </span>
+              </div>
+              <p className="vn-mc-why">
+                <b>Why now.</b> Average check size lands inside the founder&rsquo;s target range, and
+                the fund is actively deploying this quarter.
+              </p>
+              <div className="vn-mc-foot">
+                <span className="vn-chip-draft">Draft intro · VI / EN</span>
+                <span className="src">Sample data</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ECOSYSTEM */}
+        <section id="ecosystem" className="vn-wrap">
+          <div className="vn-eco-grid">
+            <div className="vn-eco-head vn-reveal">
+              <span className="vn-eyebrow">One ecosystem</span>
+              <h2 className="vn-serif">Six kinds of players, one flow of knowledge.</h2>
+              <p className="vn-lede">
+                Startups, capital, corporates, universities, research, and government all move the
+                same ideas. VietNexus routes them to each other with intent.
+              </p>
+            </div>
+            <div className="vn-actors vn-reveal">
+              {ACTORS.map((a) => (
+                <div className="vn-actor" key={a.title}>
+                  <div className="vn-actor-top">
+                    <span className="dot" style={{ background: a.dot }} />
+                    <span className="title">{a.title}</span>
+                  </div>
+                  <div className="desc">{a.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* EXPLAINED */}
+        <section id="explained" className="vn-wrap" style={{ paddingTop: 0 }}>
+          <div className="vn-exp-head vn-reveal">
+            <h2 className="vn-serif">Not a black box. A recommendation you can question.</h2>
+            <p className="vn-lede">
+              A fit score is only the start. Every VietNexus match opens with its reasoning, the
+              evidence beneath it, and the route from introduction to outcome.
+            </p>
+          </div>
+
+          <div className="vn-exp-body">
+            <div className="vn-guarantees vn-reveal">
+              {GUARANTEES.map((g) => (
+                <div className="vn-guarantee" key={g.title}>
+                  <h3>{g.title}</h3>
+                  <p>{g.body}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Detailed artifact — a real VietNexus match, sample organisations */}
+            <div className="vn-detail vn-reveal">
+              <div className="vn-detail-head">
+                <div>
+                  <div className="vn-detail-kicker">Venture capital match</div>
+                  <div className="vn-detail-title">enfarm &times; Touchstone Partners</div>
+                </div>
+                <div className="vn-detail-score" data-count="89">
+                  <span>89</span>
+                </div>
+              </div>
+
+              <div className="vn-reasons">
+                {REASONS.map((r) => (
+                  <div className="vn-reason" key={r.k}>
+                    <div className="k">{r.k}</div>
+                    <div className="val">{r.val}</div>
                   </div>
                 ))}
               </div>
-              <div className="vn-why">
-                <div className="vn-why-label">Why now</div>
+
+              <div className="vn-why-now">
+                <div className="k">Why now</div>
                 <p>
-                  Capital is actively deploying this quarter, and the Q1 R&amp;D tax-credit window
-                  makes co-investment materially cheaper.
+                  Capital is deploying this quarter, and the Q1 R&amp;D tax-credit window makes
+                  co-investment materially cheaper.
                 </p>
               </div>
-              <div className="vn-live-foot">
-                <span>3 public sources · confidence 0.87</span>
-                <span className="accent">Draft intro · VI / EN</span>
+
+              <div className="vn-detail-foot">
+                <span className="vn-chip-draft">Draft intro · VI / EN</span>
+                <span className="src">Three public sources · sample data</span>
               </div>
             </div>
           </div>
         </section>
 
         {/* CLOSING CTA */}
-        <section className="vn-closing">
-          <div className="vn-closing-box rise">
-            <h2>Enter the ecosystem with less uncertainty and more conviction.</h2>
+        <section className="vn-cta">
+          <div className="vn-cta-box vn-reveal">
+            <h2>Enter the ecosystem with less guessing and more conviction.</h2>
             <p>
-              Build a profile once. Get explainable matches, sources, and ready-to-send
-              introductions.
+              Build a profile once. Get explainable matches, their sources, and ready-to-send
+              introductions in Vietnamese or English.
             </p>
-            <button type="button" className="btn btn-on-dark btn-lg btn-hero" onClick={onEnter}>
-              Start your journey <span className="btn-arrow">→</span>
+            <button type="button" className="btn btn-on-dark btn-lg" onClick={onEnter}>
+              Open the app <span className="btn-arrow">&rarr;</span>
             </button>
           </div>
         </section>
       </main>
 
-      <footer className="vn-landing-footer">
-        <div className="vn-landing-footer-inner">
-          <div className="vn-landing-footer-brand">
+      <footer className="vn-footer">
+        <div className="vn-footer-inner">
+          <div className="vn-footer-brand">
             <img src="/logo.png" alt="VietNexus" />
             <b>VietNexus</b>
           </div>
-          <span>Innovation OS</span>
+          <span>Innovation OS for Vietnam</span>
         </div>
       </footer>
     </div>
