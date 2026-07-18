@@ -1,0 +1,48 @@
+# Declarative AgentSpec registry (spec §4, R4). Model PINNED per §8/§11.
+# The onboarding saga uses two feynman agents (D4: feynman = crawler runtime, ships
+# web tools). Launched as `feynman chat --mode rpc --model <model> --cwd <repo>`
+# (verified: feynman rejects --session-id/--skill/--tools). `tools` and `skill` are
+# declared for documentation + the pi/ContainerLauncher path; feynman discovers its
+# own tools and the spine carries the R3 output contract in the prompt.
+model: deepseek/deepseek-v4-flash
+
+agents:
+  enricher:
+    runtime: feynman
+    stage: enrich
+    skill: .feynman/agent/skills/entity-enrichment
+    tools: [web_search, fetch_content, get_search_content, document_parse, read, write]
+    pool_size: 2
+
+  extractor:
+    runtime: feynman
+    stage: extract
+    skill: .feynman/agent/skills/profile-extraction
+    tools: [fetch_content, document_parse, read, write]
+    pool_size: 2
+
+  # Outreach saga (spec §6 Saga 2). pi = reasoning runtime (D4), cheap; no web tools.
+  # match is an agent-backed stage (R12): the LlmJudgeMatcher runs this pi worker.
+  # Skill: matching-engine — dedicated recall + explainable scorer + named gates +
+  # bounded LLM re-rank contract. Deterministic scoring stays in spine/matcher; the
+  # pi worker follows the drop-only re-rank rails (read-only, no script execution).
+  matcher:
+    runtime: pi
+    stage: match
+    skill: .feynman/agent/skills/matching-engine
+    tools: [read]
+    pool_size: 1
+
+  drafter:
+    runtime: pi
+    stage: draft
+    skill: .feynman/agent/skills/dealflow-match
+    tools: [read]
+    pool_size: 1
+
+  verifier:
+    runtime: pi
+    stage: verify
+    skill: .feynman/agent/skills/draft-verify
+    tools: [read]
+    pool_size: 1

@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "verify",
+  "description": "R3 agent->spine contract for the verify stage (pi, draft-verify LLM-as-judge). `pass` gates matches.status='draft_ready'; on fail, `issues` feed the verify->draft retry (R5).",
+  "type": "object",
+  "required": ["pass"],
+  "properties": {
+    "pass": {"type": "boolean"},
+    "issues": {"type": "array", "items": {"type": "string"}},
+    "checks": {"type": "object"}
+  }
+}

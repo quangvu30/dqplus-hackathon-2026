@@ -1,0 +1,32 @@
+{
+  "entity_type": "startup",
+  "source": "docs/dealflow_matchmaker_research.md §8.4.5 (NIC-supported startups, deduplicated)",
+  "note": "Seed = names + light hints only. Enrichment agents produce the real sourced profiles.",
+  "startups": [
+    {"name": "Alternō", "type": "startup", "country": "Vietnam", "sectors": ["clean_energy", "esg"], "programs": ["NIC Scale X"]},
+    {"name": "STAR GLOBAL", "type": "startup", "country": "Vietnam", "sectors": ["digital_twin", "iot"], "programs": ["NIC Scale X"]},
+    {"name": "enfarm Agritech", "type": "startup", "country": "Vietnam", "sectors": ["agritech", "ai"], "programs": ["NIC Scale X", "VIC 2024"]},
+    {"name": "VOX Cool", "type": "startup", "country": "Vietnam", "sectors": ["clean_energy"], "programs": ["NIC Scale X"]},
+    {"name": "Rongbient Biotech", "type": "startup", "country": "Vietnam", "sectors": ["healthcare", "biotech"], "programs": ["NIC Scale X"]},
+    {"name": "SHOES AGTECH LTD", "type": "startup", "country": "Vietnam", "sectors": ["agritech"], "programs": ["NIC Scale X"]},
+    {"name": "Next Robotics", "type": "startup", "country": "Vietnam", "sectors": ["robotics", "ai", "smart_manufacturing"], "programs": ["NIC Scale X", "VietLeap"]},
+    {"name": "N2TP Technology Solutions JSC", "type": "startup", "country": "Vietnam", "sectors": ["digital_infrastructure"], "programs": ["NIC Scale X"]},
+    {"name": "esa Inc.", "type": "startup", "country": "Japan", "sectors": [], "programs": ["NIC Scale X"]},
+    {"name": "NanoFrontier", "type": "startup", "country": "Japan", "sectors": ["deep_tech"], "programs": ["NIC Scale X"]},
+    {"name": "Diaflow", "type": "startup", "country": "Vietnam", "sectors": ["ai_agents", "automation"], "programs": ["VietLeap"]},
+    {"name": "VBrain", "type": "startup", "country": "Vietnam", "sectors": ["enterprise_ai"], "programs": ["VietLeap"]},
+    {"name": "Freshdi", "type": "startup", "country": "Vietnam", "sectors": ["supply_chain", "ai", "agritech"], "programs": ["VietLeap"]},
+    {"name": "Finful", "type": "startup", "country": "Vietnam", "sectors": ["fintech", "ai"], "programs": ["VietLeap"]},
+    {"name": "Brain-Life Link", "type": "startup", "country": "Vietnam", "sectors": ["healthtech", "ai"], "programs": ["VietLeap"]},
+    {"name": "Pixel ML", "type": "startup", "country": "Vietnam", "sectors": ["enterprise_ai"], "programs": ["VietLeap"]},
+    {"name": "OdaAI", "type": "startup", "country": "Vietnam", "sectors": ["enterprise_ai"], "programs": ["VietLeap"]},
+    {"name": "MindShift", "type": "startup", "country": "Vietnam", "sectors": ["hr_tech", "ai"], "programs": ["VietLeap"]},
+    {"name": "MedCAT", "type": "startup", "country": "Vietnam", "sectors": ["healthtech", "ai"], "programs": ["VietLeap"]},
+    {"name": "BlockX", "type": "startup", "country": "Vietnam", "sectors": ["semiconductor"], "programs": ["VIC 2024"]},
+    {"name": "TreSemi", "type": "startup", "country": "Vietnam", "sectors": ["semiconductor"], "programs": ["VIC 2024"]},
+    {"name": "MotionsCloud", "type": "startup", "country": "Vietnam", "sectors": ["ai"], "programs": ["VIC 2024"]},
+    {"name": "Abivin Vietnam", "type": "startup", "country": "Vietnam", "sectors": ["ai", "logistics", "supply_chain"], "programs": ["VIC 2024"]},
+    {"name": "AhaFood AI", "type": "startup", "country": "Vietnam", "sectors": ["ai", "foodtech", "agritech"], "programs": ["VIC 2024"]},
+    {"name": "Doctranslate.io", "type": "startup", "country": "Vietnam", "sectors": ["ai", "translation"], "programs": ["Google for Startups (w/ NIC)"]}
+  ]
+}

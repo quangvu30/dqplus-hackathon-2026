@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "rank",
+  "description": "R3/R12 agent->spine contract for the match stage (pi LlmJudgeMatcher, dealflow-match §3). The pi worker ranks + explains the pre-filtered candidate handful in one call. composite is the 0-100 fit score.",
+  "type": "object",
+  "required": ["matches"],
+  "properties": {
+    "matches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["partner_id", "composite", "rationale_en", "rationale_vi"],
+        "properties": {
+          "partner_id": {"type": "string"},
+          "composite": {"type": "number"},
+          "semantic": {"type": ["number", "null"]},
+          "sector_overlap": {"type": ["number", "null"]},
+          "rationale_en": {"type": "string"},
+          "rationale_vi": {"type": "string"}
+        }
+      }
+    }
+  }
+}

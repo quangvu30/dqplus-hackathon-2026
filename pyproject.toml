@@ -1,0 +1,27 @@
+[project]
+name = "deal-flow-matchmaker"
+version = "0.1.0"
+description = "Agent data platform for deal-flow matchmaking (problem #135, VAIC 2026)"
+requires-python = ">=3.12"
+dependencies = [
+    "asyncpg>=0.30",
+    "structlog>=24.4",
+    "jsonschema>=4.23",
+    "pyyaml>=6.0",
+    "fastapi>=0.115",
+    "uvicorn>=0.32",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.setuptools.packages.find]
+include = ["spine*"]

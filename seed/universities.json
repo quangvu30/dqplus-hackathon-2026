@@ -1,0 +1,12 @@
+{
+  "entity_type": "university",
+  "source": "Web research (2025-2026) + research doc: nucamp.co, edurank.org, vietcetera, HUST/VNU public pages — compiled 2026-07-18",
+  "note": "Seed = names + light research-domain hints only. Enrichment agents produce the real sourced profiles. type = university | research_institution.",
+  "institutions": [
+    {"name": "Vietnam National University, Hanoi (VNU)", "type": "university", "country": "Vietnam", "hint_website": "vnu.edu.vn", "research_domains": ["ai", "ict", "materials", "biotech", "physics"]},
+    {"name": "Hanoi University of Science and Technology (HUST)", "type": "university", "country": "Vietnam", "hint_website": "hust.edu.vn", "research_domains": ["ai", "data_science", "semiconductor", "robotics", "materials", "engineering"], "note": "\"MIT of Vietnam\"; 8 national laboratories"},
+    {"name": "Phenikaa University", "type": "university", "country": "Vietnam", "hint_website": "phenikaa-uni.edu.vn", "research_domains": ["materials", "semiconductor", "ai", "health", "robotics"], "note": "Also cited as research institution in research doc §489"},
+    {"name": "VNU-HCM University of Information Technology (UIT)", "type": "university", "country": "Vietnam", "hint_website": "uit.edu.vn", "research_domains": ["ai", "software", "information_security", "data_science"]},
+    {"name": "Vietnam Academy of Science and Technology (VAST)", "type": "research_institution", "country": "Vietnam", "hint_website": "vast.gov.vn", "research_domains": ["biotech", "materials", "physics", "chemistry", "marine_science"]}
+  ]
+}

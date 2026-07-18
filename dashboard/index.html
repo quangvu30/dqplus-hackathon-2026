@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Deal-flow Matchmaker</title>
+<style>
+  :root {
+    --bg: #0d1117; --panel: #161b22; --border: #30363d; --fg: #e6edf3;
+    --muted: #8b949e; --accent: #2f81f7; --good: #3fb950; --warn: #d29922;
+    --bad: #f85149; --chip: #21262d;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.5 -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--fg); }
+  header { display: flex; align-items: center; gap: 16px; padding: 12px 20px;
+    border-bottom: 1px solid var(--border); background: var(--panel); position: sticky; top: 0; z-index: 5; }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; }
+  header .spacer { flex: 1; }
+  .stat { font-size: 12px; color: var(--muted); }
+  .stat b { color: var(--fg); font-size: 14px; }
+  button { background: var(--accent); color: #fff; border: 0; border-radius: 6px;
+    padding: 7px 12px; font-size: 13px; cursor: pointer; }
+  button:hover { filter: brightness(1.1); }
+  button.ghost { background: var(--chip); color: var(--fg); border: 1px solid var(--border); }
+  .layout { display: grid; grid-template-columns: 280px 1fr 320px; gap: 0; height: calc(100vh - 53px); }
+  .col { overflow-y: auto; padding: 14px; }
+  .col.left { border-right: 1px solid var(--border); }
+  .col.right { border-left: 1px solid var(--border); background: var(--panel); }
+  h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
+    margin: 0 0 8px; font-weight: 600; }
+  .section { margin-bottom: 22px; }
+  .ent { padding: 7px 9px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between;
+    align-items: center; gap: 6px; }
+  .ent:hover { background: var(--chip); }
+  .ent.sel { background: #1f6feb33; outline: 1px solid var(--accent); }
+  .ent .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ent .ty { font-size: 10px; color: var(--muted); }
+  .badge { font-size: 10px; padding: 1px 6px; border-radius: 10px; background: var(--chip);
+    color: var(--muted); white-space: nowrap; }
+  .badge.ready { color: var(--good); } .badge.seeded { color: var(--warn); }
+  .mc { font-size: 11px; color: var(--accent); }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px; margin-bottom: 12px; }
+  .match-head { display: flex; align-items: baseline; gap: 10px; }
+  .match-head .score { font-size: 20px; font-weight: 700; color: var(--accent); }
+  .match-head .pname { font-size: 15px; font-weight: 600; }
+  .kv { display: flex; gap: 12px; flex-wrap: wrap; margin: 6px 0; font-size: 12px; color: var(--muted); }
+  .rationale { margin: 8px 0; }
+  .rationale .lbl { font-size: 10px; text-transform: uppercase; color: var(--muted); letter-spacing: .05em; }
+  details { margin-top: 8px; }
+  summary { cursor: pointer; color: var(--accent); font-size: 12px; }
+  pre { white-space: pre-wrap; word-wrap: break-word; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px; font: 12px/1.5 ui-monospace, Menlo, monospace; margin: 6px 0; max-height: 320px; overflow: auto; }
+  .status-ready { color: var(--good); } .status-ranked { color: var(--warn); }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 2px; }
+  .subhead { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted);
+    margin: 14px 0 6px; font-weight: 600; border-top: 1px solid var(--border); padding-top: 10px; }
+  .fld { display: flex; gap: 8px; align-items: baseline; padding: 3px 0; flex-wrap: wrap; }
+  .fld .fk { color: var(--muted); min-width: 130px; font-size: 12px; text-transform: capitalize; }
+  .fld .fv { flex: 1; min-width: 160px; }
+  .fld.nested { display: block; }
+  .fld.nested > .fk { display: block; margin-bottom: 2px; }
+  .nest { border-left: 1px solid var(--border); padding-left: 10px; margin-left: 4px; }
+  .src { font-size: 10px; color: var(--accent); text-decoration: none; white-space: nowrap; }
+  .src:hover { text-decoration: underline; }
+  .conf { font-size: 10px; color: var(--muted); }
+  .rel { display: flex; gap: 8px; align-items: baseline; padding: 4px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .rel .rk { color: var(--accent); font-size: 11px; }
+  .rel .unres { color: var(--muted); font-style: italic; }
+  .rel .arrow { color: var(--muted); }
+  a.lnk { color: var(--accent); text-decoration: none; } a.lnk:hover { text-decoration: underline; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  td, th { text-align: left; padding: 3px 4px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 500; }
+  .ev { font-size: 12px; padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
+  .ev .k { font-weight: 600; }
+  .ev .t { color: var(--muted); margin-left: auto; white-space: nowrap; }
+  .kind-Verified, .kind-DraftReady { color: var(--good); }
+  .kind-VerifyRejected, .kind-DraftDeadLettered { color: var(--bad); }
+  .kind-MatchesRanked, .kind-FilterCompleted { color: var(--accent); }
+  .empty { color: var(--muted); font-style: italic; padding: 20px 0; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
+  .dot.busy { background: var(--warn); } .dot.idle { background: var(--good); }
+  .dot.dead { background: var(--bad); } .dot.starting { background: var(--accent); }
+  .costbar { height: 6px; background: var(--accent); border-radius: 3px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Deal-flow Matchmaker</h1>
+  <div class="stat">LLM cost <b id="hdr-cost">—</b></div>
+  <div class="stat">/entity <b id="hdr-cpe">—</b></div>
+  <div class="stat">/match <b id="hdr-cpm">—</b></div>
+  <div class="spacer"></div>
+  <div class="stat" id="pulse">live</div>
+  <button id="run-btn" class="ghost">Run outreach (all)</button>
+</header>
+
+<div class="layout">
+  <div class="col left">
+    <div class="section">
+      <h2>Startups</h2>
+      <div id="startups"></div>
+    </div>
+    <div class="section">
+      <h2>Partners</h2>
+      <div id="partners"></div>
+    </div>
+  </div>
+
+  <div class="col mid">
+    <div id="detail"><div class="empty">Select a startup to see its ranked matches, rationale and drafts.</div></div>
+  </div>
+
+  <div class="col right">
+    <div class="section">
+      <h2>LLM Cost</h2>
+      <div id="costs"></div>
+    </div>
+    <div class="section">
+      <h2>Pool &amp; Queue Health</h2>
+      <div id="health"></div>
+    </div>
+    <div class="section">
+      <h2>Event Stream</h2>
+      <div id="events"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let selected = null;
+
+async function j(path, opts) {
+  const r = await fetch(path, opts);
+  if (!r.ok) throw new Error(path + " " + r.status);
+  return r.json();
+}
+const usd = (v) => (v == null ? "—" : "$" + Number(v).toFixed(4));
+const short = (t) => t ? new Date(t).toLocaleTimeString() : "";
+
+async function loadEntities() {
+  const ents = await j("/entities");
+  const startups = ents.filter(e => e.type === "startup");
+  const partners = ents.filter(e => e.type !== "startup");
+  $("startups").innerHTML = startups.length ? startups.map(e => `
+    <div class="ent ${selected === e.id ? "sel" : ""}" data-id="${e.id}">
+      <span class="nm">${e.name}</span>
+      ${e.match_count ? `<span class="mc">${e.match_count}★</span>` : ""}
+      <span class="badge ${e.status}">${e.status}</span>
+    </div>`).join("") : `<div class="empty">No startups onboarded yet.</div>`;
+  $("partners").innerHTML = partners.length ? partners.map(e => `
+    <div class="ent ${selected === e.id ? "sel" : ""}" data-id="${e.id}">
+      <span class="nm">${e.name}<br><span class="ty">${e.type.replace("_"," ")}</span></span>
+      ${e.match_count ? `<span class="mc">${e.match_count}★</span>` : ""}
+      <span class="badge ${e.status}">${e.status}</span>
+    </div>`).join("") : `<div class="empty">No partners.</div>`;
+  document.querySelectorAll(".ent[data-id]").forEach(el =>
+    el.onclick = () => { selected = el.dataset.id; loadEntities(); loadDetail(); });
+}
+
+// ---- generic profile rendering (provenance-aware) --------------------------
+const RESERVED = new Set(
+  ["seed", "normalized", "relationships", "collection_summary", "entity_type", "edges"]);
+
+function isProv(v) {
+  return v && typeof v === "object" && !Array.isArray(v) && ("value" in v);
+}
+function pick(v) {  // unwrap {value,...} → value, else identity
+  return isProv(v) ? v.value : v;
+}
+function provMeta(v) {
+  let s = "";
+  if (v.source_url) s += ` <a class="src" href="${escapeAttr(v.source_url)}" target="_blank" rel="noopener">source ↗</a>`;
+  if (v.confidence != null) s += ` <span class="conf">${typeof v.confidence === "number" ? v.confidence.toFixed(2) : escapeHtml(v.confidence)}</span>`;
+  return s;
+}
+function fmtScalar(v) {
+  if (v == null || v === "") return "";
+  return escapeHtml(typeof v === "object" ? JSON.stringify(v) : v);
+}
+function valBody(v) {
+  if (Array.isArray(v))
+    return v.map(x => typeof x === "object" && x !== null
+      ? escapeHtml(JSON.stringify(x)) : `<span class="badge">${escapeHtml(x)}</span>`).join(" ");
+  return fmtScalar(v);
+}
+function renderField(key, val) {
+  if (val == null || val === "") return "";
+  if (isProv(val))
+    return `<div class="fld"><span class="fk">${escapeHtml(key)}</span>
+      <span class="fv">${valBody(val.value)}${provMeta(val)}</span></div>`;
+  if (Array.isArray(val)) {
+    if (!val.length) return "";
+    if (val.every(x => typeof x !== "object" || x === null))
+      return `<div class="fld"><span class="fk">${escapeHtml(key)}</span>
+        <span class="fv chips">${val.map(x => `<span class="badge">${escapeHtml(x)}</span>`).join("")}</span></div>`;
+    return `<div class="fld nested"><span class="fk">${escapeHtml(key)}</span>
+      <div class="nest">${val.map((x, i) => renderField("#" + (i + 1), x)).join("")}</div></div>`;
+  }
+  if (typeof val === "object") {
+    const rows = Object.entries(val).map(([k, v]) => renderField(k, v)).join("");
+    return rows ? `<div class="fld nested"><span class="fk">${escapeHtml(key)}</span>
+      <div class="nest">${rows}</div></div>` : "";
+  }
+  return `<div class="fld"><span class="fk">${escapeHtml(key)}</span><span class="fv">${fmtScalar(val)}</span></div>`;
+}
+
+function chipRow(vals) {
+  const items = (vals || []).map(pick).filter(v => v != null && v !== "");
+  return items.length ? `<div class="chips">${items.map(s =>
+    `<span class="badge">${escapeHtml(typeof s === "object" ? JSON.stringify(s) : s)}</span>`).join("")}</div>` : "";
+}
+
+function matchCard(m, headlineName, headlineType) {
+  return `<div class="card">
+    <div class="match-head">
+      <span class="score">${m.composite != null ? Math.round(m.composite) : "?"}</span>
+      <span class="pname">${escapeHtml(headlineName)}</span>
+      <span class="badge">${escapeHtml((headlineType || "").replace("_", " "))}</span>
+      <span class="badge status-${m.status}">${m.status}</span>
+    </div>
+    <div class="kv">
+      <span>semantic ${m.semantic != null ? Number(m.semantic).toFixed(2) : "—"}</span>
+      <span>sector overlap ${m.sector_overlap != null ? Number(m.sector_overlap).toFixed(2) : "—"}</span>
+    </div>
+    ${m.rationale_en ? `<div class="rationale"><div class="lbl">Rationale (EN)</div>${escapeHtml(m.rationale_en)}</div>` : ""}
+    ${m.rationale_vi ? `<div class="rationale"><div class="lbl">Rationale (VI)</div>${escapeHtml(m.rationale_vi)}</div>` : ""}
+    ${m.draft_en ? `<details><summary>Draft email (EN)</summary><pre>${escapeHtml(m.draft_en)}</pre></details>` : ""}
+    ${m.draft_vi ? `<details><summary>Draft email (VI)</summary><pre>${escapeHtml(m.draft_vi)}</pre></details>` : ""}
+  </div>`;
+}
+
+function relRow(e) {
+  const other = e.direction === "out"
+    ? (e.dst_entity_name || e.dst_name || e.dst_id)
+    : (e.src_name || e.src_id);
+  const resolvable = e.direction === "out" && e.dst_resolved && e.dst_id;
+  const nameHtml = resolvable
+    ? `<a class="lnk" data-goto="${escapeAttr(e.dst_id)}" href="#">${escapeHtml(other)}</a>`
+    : `<span class="${e.dst_resolved || e.direction === "in" ? "" : "unres"}">${escapeHtml(other)}</span>`;
+  const arrow = e.direction === "out" ? "→" : "←";
+  return `<div class="rel"><span class="rk">${escapeHtml(e.kind)}</span>
+    <span class="arrow">${arrow}</span>${nameHtml}
+    ${e.source_url ? `<a class="src" href="${escapeAttr(e.source_url)}" target="_blank" rel="noopener">source ↗</a>` : ""}</div>`;
+}
+
+async function loadDetail() {
+  if (!selected) return;
+  let ent;
+  try { ent = await j("/entities/" + encodeURIComponent(selected)); }
+  catch (e) { $("detail").innerHTML = `<div class="empty">Failed to load entity: ${escapeHtml(e.message)}</div>`; return; }
+
+  const prof = ent.profile || {};
+  const isStartup = ent.type === "startup";
+  const norm = prof.normalized || {};
+  const seed = prof.seed || (ent.status === "ready" ? {} : prof);
+  const edges = ent.edges || [];
+  const desc = pick(norm.description_en) || pick(prof.description) || "";
+  const website = pick(seed.hint_website) || pick(seed.website) || pick(prof.website);
+
+  let matches = [];
+  try {
+    matches = await j("/matches?" + (isStartup ? "startup_id=" : "partner_id=") + encodeURIComponent(selected));
+  } catch (e) { /* matches optional */ }
+
+  // header card
+  let html = `<div class="card">
+    <div class="match-head">
+      <span class="pname">${escapeHtml(ent.name)}</span>
+      <span class="badge">${escapeHtml(ent.type.replace("_", " "))}</span>
+      <span class="badge ${ent.status}">${ent.status}</span>
+    </div>
+    ${chipRow(norm.sectors)}
+    ${desc ? `<div class="rationale">${escapeHtml(desc)}</div>` : ""}
+    <div class="kv">
+      ${pick(seed.country) ? `<span>📍 ${escapeHtml(pick(seed.country))}</span>` : ""}
+      ${pick(norm.stage) ? `<span>stage ${escapeHtml(pick(norm.stage))}</span>` : ""}
+      ${website ? `<span>🔗 <a class="lnk" href="${escapeAttr(/^https?:/.test(website) ? website : "https://" + website)}" target="_blank" rel="noopener">${escapeHtml(website)}</a></span>` : ""}
+    </div>
+  </div>`;
+
+  // matching profile (normalized fields, R2)
+  const looking = (norm.looking_for || []).map(pick).filter(Boolean);
+  if ((norm.sectors && norm.sectors.length) || looking.length || pick(norm.description_vi)) {
+    html += `<div class="card">
+      <div class="subhead" style="border:0;padding:0;margin:0 0 8px">Matching profile</div>
+      ${renderField("sectors", norm.sectors)}
+      ${renderField("looking for", norm.looking_for)}
+      ${norm.stage ? renderField("stage", norm.stage) : ""}
+      ${pick(norm.description_vi) ? renderField("description (vi)", pick(norm.description_vi)) : ""}
+    </div>`;
+  }
+
+  // seed facts
+  const seedRows = Object.entries(seed).map(([k, v]) => renderField(k.replace(/^hint_/, ""), v)).join("");
+  if (seedRows)
+    html += `<div class="card"><div class="subhead" style="border:0;padding:0;margin:0 0 8px">Seed</div>${seedRows}</div>`;
+
+  // enriched profile sections (generic, provenance-aware)
+  const enrichRows = Object.entries(prof)
+    .filter(([k]) => !RESERVED.has(k) && !(k in seed))
+    .map(([k, v]) => renderField(k, v)).join("");
+  if (enrichRows)
+    html += `<div class="card"><div class="subhead" style="border:0;padding:0;margin:0 0 8px">Enriched profile</div>${enrichRows}</div>`;
+
+  // relationships
+  if (edges.length)
+    html += `<div class="card"><div class="subhead" style="border:0;padding:0;margin:0 0 8px">Relationships (${edges.length})</div>
+      ${edges.map(relRow).join("")}</div>`;
+
+  // matches — ranked partners for a startup, reverse (interested startups) for a partner
+  if (!matches.length) {
+    html += `<div class="empty">No matches yet${isStartup ? ". Trigger a run, then start the supervisor with --drain." : " for this partner."}</div>`;
+  } else {
+    html += `<h2>${isStartup ? "Ranked matches" : "Matched startups"} (${matches.length})</h2>`;
+    html += matches.map(m => isStartup
+      ? matchCard(m, m.partner_name || m.partner_id, m.partner_type)
+      : matchCard(m, m.startup_name || m.startup_id, "startup")).join("");
+  }
+
+  // raw profile
+  html += `<details><summary>Raw profile JSON</summary><pre>${escapeHtml(JSON.stringify(prof, null, 2))}</pre></details>`;
+
+  $("detail").innerHTML = html;
+  $("detail").querySelectorAll("a[data-goto]").forEach(a =>
+    a.onclick = (ev) => { ev.preventDefault(); selected = a.dataset.goto; loadEntities(); loadDetail(); });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+}
+function escapeAttr(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+async function loadCosts() {
+  const c = await j("/costs");
+  $("hdr-cost").textContent = usd(c.total.cost_usd);
+  $("hdr-cpe").textContent = usd(c.cost_per_ready_entity);
+  $("hdr-cpm").textContent = usd(c.cost_per_match);
+  const max = Math.max(1e-9, ...c.by_agent.map(a => a.cost_usd));
+  $("costs").innerHTML = `
+    <table><tr><th>agent</th><th>turns</th><th>cost</th></tr>
+    ${c.by_agent.map(a => `<tr><td>${a.agent}<br>
+      <div class="costbar" style="width:${Math.round(100*a.cost_usd/max)}%"></div></td>
+      <td>${a.turns}</td><td>${usd(a.cost_usd)}</td></tr>`).join("")}
+    </table>
+    <div class="stat" style="margin-top:8px">${c.total.tokens_in.toLocaleString()} in /
+      ${c.total.tokens_out.toLocaleString()} out tokens · ${c.total.turns} turns</div>`;
+}
+
+async function loadHealth() {
+  const m = await j("/metrics");
+  const w = m.workers || {};
+  const wchips = Object.keys(w).length ? Object.entries(w).map(([s,n]) =>
+    `<span class="badge"><span class="dot ${s}"></span>${s} ${n}</span>`).join(" ")
+    : `<span class="empty">no workers registered</span>`;
+  const jobs = m.jobs_by_stage_status || [];
+  $("health").innerHTML = `
+    <div style="margin-bottom:8px">${wchips}</div>
+    <div class="kv">
+      <span>ready <b>${m.queue.ready}</b></span>
+      <span>leased <b>${m.queue.leased}</b></span>
+      <span>dead-letter <b>${m.queue.dead_letter}</b></span>
+    </div>
+    <table style="margin-top:6px"><tr><th>stage</th><th>status</th><th>n</th></tr>
+    ${jobs.map(x => `<tr><td>${x.stage}</td><td>${x.status}</td><td>${x.n}</td></tr>`).join("")}
+    </table>`;
+}
+
+async function loadEvents() {
+  const evs = await j("/events?limit=20");
+  $("events").innerHTML = evs.length ? evs.map(e => `
+    <div class="ev">
+      <span class="k kind-${e.kind}">${e.kind}</span>
+      <span class="t">${short(e.created_at)}</span>
+    </div>`).join("") : `<div class="empty">No events yet.</div>`;
+}
+
+async function refresh() {
+  try {
+    await Promise.all([loadEntities(), loadCosts(), loadHealth(), loadEvents()]);
+    if (selected) await loadDetail();
+    $("pulse").textContent = "live · " + new Date().toLocaleTimeString();
+    $("pulse").style.color = "var(--good)";
+  } catch (e) {
+    $("pulse").textContent = "error: " + e.message;
+    $("pulse").style.color = "var(--bad)";
+  }
+}
+
+$("run-btn").onclick = async () => {
+  $("run-btn").disabled = true;
+  try {
+    const r = await j("/runs", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({all: true}),
+    });
+    $("pulse").textContent = `triggered ${r.count} saga(s) · ${r.trace_id}`;
+  } catch (e) { $("pulse").textContent = "run failed: " + e.message; }
+  finally { $("run-btn").disabled = false; refresh(); }
+};
+
+refresh();
+setInterval(refresh, 3000);
+</script>
+</body>
+</html>

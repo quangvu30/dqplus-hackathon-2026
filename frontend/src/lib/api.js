@@ -1,4 +1,8 @@
-const BASE = import.meta.env.VITE_API_BASE || '/api';
+// Per-service bases mirror the nginx/vite proxy routing:
+// /api/backend → gateway, /api/agents → extract agent, /api/matches → matching engine.
+const ROOT = import.meta.env.VITE_API_BASE || '/api';
+const BACKEND = ROOT + '/backend';
+const AGENTS = ROOT + '/agents';
 
 export class ApiError extends Error {
   constructor(message, status) {
@@ -13,7 +17,7 @@ export function isNetworkError(e) {
 }
 
 async function request(path, { method = 'GET', token, body } = {}) {
-  const res = await fetch(BASE + path, {
+  const res = await fetch(path, {
     method,
     headers: {
       'Content-Type': 'application/json',
@@ -35,25 +39,25 @@ async function request(path, { method = 'GET', token, body } = {}) {
 }
 
 export function login({ email, password }) {
-  return request('/auth/login', { method: 'POST', body: { username: email, password } });
+  return request(BACKEND + '/auth/login', { method: 'POST', body: { username: email, password } });
 }
 
 export function register({ email, password, role }) {
-  return request('/auth/register', {
+  return request(BACKEND + '/auth/register', {
     method: 'POST',
     body: { username: email, password, role: role === 'investor' ? 'investor' : 'founder' },
   });
 }
 
 export function getProfile(token, id) {
-  return request('/profiles/' + id, { token });
+  return request(BACKEND + '/profiles/' + id, { token });
 }
 
 export function saveProfile(token, profileId, payload) {
   if (profileId) {
-    return request('/profiles/' + profileId, { method: 'PATCH', token, body: payload });
+    return request(BACKEND + '/profiles/' + profileId, { method: 'PATCH', token, body: payload });
   }
-  return request('/profiles', { method: 'POST', token, body: payload });
+  return request(BACKEND + '/profiles', { method: 'POST', token, body: payload });
 }
 
 export function toProfilePayload(form) {
@@ -75,13 +79,13 @@ export function toProfilePayload(form) {
 }
 
 export function extractProfile(userId) {
-  return request('/extract/profile', { method: 'POST', body: { userId } });
+  return request(AGENTS + '/extract/profile', { method: 'POST', body: { userId } });
 }
 
 export function getMatches({ userId, role }) {
   const path = role === 'investor'
-    ? '/matches/investors/' + userId + '/founders'
-    : '/matches/founders/' + userId + '/investors';
+    ? ROOT + '/matches/investors/' + userId + '/founders'
+    : ROOT + '/matches/founders/' + userId + '/investors';
   return request(path + '?limit=50');
 }
 

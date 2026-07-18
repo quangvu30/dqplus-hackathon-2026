@@ -1,0 +1,27 @@
+{
+  "entity_type": "investor",
+  "source": "Web research (2025-2026): jdi.group, openvc.app, papermark.com, shizune.co, vietcetera, 500.co, theinvestor.vn — compiled 2026-07-18",
+  "note": "Seed = names + light hints only. Enrichment agents produce the real sourced profiles; provenance audit flags any unverifiable entry.",
+  "investors": [
+    {"name": "Mekong Capital", "type": "investor", "country": "Vietnam", "hint_website": "mekongcapital.com", "note": "Est. 2001; consumer-driven; among the most established VN funds"},
+    {"name": "500 Global Vietnam", "type": "investor", "country": "Vietnam", "hint_website": "vietnam.500.co", "note": "Largest VN VC by deal count; seed stage"},
+    {"name": "Touchstone Partners", "type": "investor", "country": "Vietnam", "hint_website": "touchstone.vn", "note": "Active early-stage; climate, agri, education, healthcare"},
+    {"name": "VinVentures", "type": "investor", "country": "Vietnam", "hint_website": null, "note": "Vingroup fund, launched Oct 2024; high-impact tech"},
+    {"name": "Ascend Vietnam Ventures", "type": "investor", "country": "Vietnam", "hint_website": null, "note": "AVV (fka Ascend); early stage; Eddie Thai / Binh Tran"},
+    {"name": "Do Ventures", "type": "investor", "country": "Vietnam", "hint_website": "do.ventures", "note": "Prominent VN early-stage; Dzung Nguyen & Vy Le"},
+    {"name": "ThinkZone Ventures", "type": "investor", "country": "Vietnam", "hint_website": null, "note": "VN early-stage fund"},
+    {"name": "Genesia Ventures", "type": "investor", "country": "Japan", "hint_website": "genesiaventures.com", "note": "Japan-based; pre-seed/seed across SEA incl. Vietnam; DX"},
+    {"name": "Nextrans", "type": "investor", "country": "South Korea", "hint_website": null, "note": "Korea-based, active early-stage in Vietnam"},
+    {"name": "Ansible Ventures", "type": "investor", "country": "Vietnam", "hint_website": null, "note": "Dedicated VN pre-seed/seed fund"},
+    {"name": "ESP Capital", "type": "investor", "country": "Vietnam", "hint_website": null, "note": "Early-stage; active VN investor"},
+    {"name": "FPT Ventures", "type": "investor", "country": "Vietnam", "hint_website": null, "note": "Corporate VC arm of FPT"},
+    {"name": "VinaCapital Ventures", "type": "investor", "country": "Vietnam", "hint_website": "vinacapital.com", "note": "Venture arm of VinaCapital"},
+    {"name": "VIISA", "type": "investor", "country": "Vietnam", "hint_website": null, "note": "Vietnam Innovative Startup Accelerator; enterprise SW, fintech, health, edu"},
+    {"name": "Antler Vietnam", "type": "investor", "country": "Vietnam", "hint_website": "antler.co", "note": "Global day-zero incubator + pre-seed; VN presence"},
+    {"name": "Openspace Ventures", "type": "investor", "country": "Singapore", "hint_website": "openspace.vc", "note": "SEA fund with VN exposure"},
+    {"name": "East Ventures", "type": "investor", "country": "Singapore", "hint_website": "east.vc", "note": "SEA seed/early; active in Vietnam"},
+    {"name": "Jungle Ventures", "type": "investor", "country": "Singapore", "hint_website": null, "note": "SEA fund; VN portfolio"},
+    {"name": "Pegasus Tech Ventures", "type": "investor", "country": "United States", "hint_website": "pegasustechventures.com", "note": "Silicon Valley; corporate-backed; VN interest"},
+    {"name": "VSV Capital", "type": "investor", "country": "Vietnam", "hint_website": null, "note": "Vietnam Silicon Valley; early-stage accelerator/fund"}
+  ]
+}

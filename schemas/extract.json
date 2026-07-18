@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "extract",
+  "description": "R3 agent→spine contract for the extract stage (feynman · profile-extraction). Normalized matching fields: canonical English sectors (R2) + inferred looking_for. Consumed by rule-filter/matcher in the outreach saga.",
+  "type": "object",
+  "required": ["sectors", "looking_for"],
+  "properties": {
+    "sectors": {"type": "array", "items": {"type": "string"}},
+    "looking_for": {"type": "array", "items": {"type": "string"}},
+    "stage": {"type": ["string", "null"]},
+    "description_en": {"type": ["string", "null"]},
+    "description_vi": {"type": ["string", "null"]}
+  }
+}

@@ -1,21 +1,33 @@
+# Compose: postgres + api (spec §8). Supervisor + agent pools run on the HOST via
+# LocalProcessLauncher, connecting to Postgres at localhost:5432.
 services:
   postgres:
-    image: pgvector/pgvector:pg16
-    container_name: dqplus-postgres
-    user: postgres
+    image: postgres:16      # swap to pgvector/pgvector:pg16 when EmbeddingMatcher lands
     environment:
-      POSTGRES_DB: ${DB_NAME:-gateway}
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
-    ports:
-      - "${DB_PORT:-5432}:5432"
+      POSTGRES_DB: dealflow
+      POSTGRES_USER: dealflow
+      POSTGRES_PASSWORD: dealflow
+    ports: ["5432:5432"]
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro   # numbered SQL applied at init (R13)
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-gateway}"]
+      test: ["CMD-SHELL", "pg_isready -U dealflow"]
       interval: 5s
-      timeout: 3s
       retries: 10
 
+  api:
+    build:
+      context: .                 # repo root: Dockerfile COPYs spine/, api/, dashboard/, schemas/
+      dockerfile: api/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgres://dealflow:dealflow@postgres:5432/dealflow"
+    ports: ["8443:8000"]   # host 8443 -> container's uvicorn on 8000
+
+  # agent-runtime:   # profiles: [full] — WIP (§12): bakes pi+feynman, mounts ~/.pi & ~/.feynman
+
 volumes:
-  pgdata:
+  pgdata: {}

@@ -1,0 +1,14 @@
+{
+  "entity_type": "corporation",
+  "source": "Web research (2025-2026) + research doc (VietLeap/VIC corporate partners): nssc.gov.vn, vietnamnet.vn, undp.org — compiled 2026-07-18",
+  "note": "Seed = names + light innovation-area hints only. Enrichment agents produce the real sourced profiles.",
+  "corporations": [
+    {"name": "FPT Corporation", "type": "corporation", "country": "Vietnam", "hint_website": "fpt.com", "innovation_areas": ["ai", "software", "digital_transformation", "semiconductor", "cloud"], "note": "FPT.AI Residency, akaBot, NVIDIA AI factory; VIC 2024"},
+    {"name": "Viettel Group", "type": "corporation", "country": "Vietnam", "hint_website": "viettel.com.vn", "innovation_areas": ["ai", "iot", "telecom", "semiconductor", "defense_tech"], "note": "Viettel Innovation Lab (2023); VIC 2024"},
+    {"name": "VinGroup", "type": "corporation", "country": "Vietnam", "hint_website": "vingroup.net", "innovation_areas": ["ev", "ai", "healthcare", "materials"], "note": "VinAI, VinFast R&D, VinUni Agile Innovation Center"},
+    {"name": "EVN (Vietnam Electricity)", "type": "corporation", "country": "Vietnam", "hint_website": "evn.com.vn", "innovation_areas": ["energy", "clean_energy", "smart_grid"], "note": "VietLeap corporate partner"},
+    {"name": "Heineken Vietnam", "type": "corporation", "country": "Vietnam", "hint_website": null, "innovation_areas": ["fmcg", "sustainability", "supply_chain", "circular_economy"], "note": "VietLeap corporate partner"},
+    {"name": "Cốc Cốc", "type": "corporation", "country": "Vietnam", "hint_website": "coccoc.com", "innovation_areas": ["internet", "search", "ai", "adtech"], "note": "VietLeap corporate partner"},
+    {"name": "HDBank", "type": "corporation", "country": "Vietnam", "hint_website": "hdbank.com.vn", "innovation_areas": ["fintech", "banking", "ai"], "note": "Galaxy Innovation Hub"}
+  ]
+}
