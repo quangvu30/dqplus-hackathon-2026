@@ -271,15 +271,11 @@ select {
   color: var(--ink);
 }
 
-.vn-header-tile {
-  display: grid;
-  place-items: center;
+.vn-header-logo {
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: var(--accent);
-  color: #fff;
-  font: 600 14px var(--font-ui);
+  object-fit: cover;
 }
 
 .vn-header-name {

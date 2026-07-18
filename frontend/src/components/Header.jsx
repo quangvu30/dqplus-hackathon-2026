@@ -3,7 +3,7 @@ export default function Header({ session, status, onLogout }) {
   return (
     <header className="vn-header">
       <div className="vn-header-brand">
-        <span className="vn-header-tile">V</span>
+        <img className="vn-header-logo" src="/logo.png" alt="VietNexus" />
         <b className="vn-header-name">VietNexus</b>
       </div>
       <div className="vn-header-right">
