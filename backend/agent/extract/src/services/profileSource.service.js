@@ -17,13 +17,40 @@ async function loadUserProfile(userId) {
   return rows[0] || null;
 }
 
+function toList(value) {
+  return value
+    ? String(value).toLowerCase().split(',').map((s) => s.trim()).filter(Boolean)
+    : [];
+}
+
+function normStage(value) {
+  return value ? String(value).toLowerCase().replace(/_/g, '-') : null;
+}
+
 function mapProfileToAttributes(row) {
+  const regions = toList(row.target_region || row.where_you_operate);
+
+  if (row.role === 'investor') {
+    return {
+      firm_name: row.company_name || null,
+      investor_type: null,
+      thesis: row.description_product || null,
+      sectors: toList(row.industry),
+      stages: normStage(row.stage) ? [normStage(row.stage)] : [],
+      geographies: regions,
+      check_size_min_usd: null,
+      check_size_max_usd: parseNumber(row.avg_initial_investment),
+      portfolio_highlights: [],
+      constraints: null,
+    };
+  }
+
   return {
     company_name: row.company_name || null,
-    industry: row.industry ? [String(row.industry).toLowerCase()] : [],
-    stage: row.stage ? String(row.stage).toLowerCase() : null,
+    industry: toList(row.industry),
+    stage: normStage(row.stage),
     country: row.country || null,
-    target_regions: row.target_region ? [String(row.target_region).toLowerCase()] : [],
+    target_regions: regions,
     team_size: row.num_of_employees ?? null,
     arr_usd: row.arr !== null && row.arr !== undefined ? Number(row.arr) : null,
     funding_ask_usd: parseNumber(row.checks),

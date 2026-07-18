@@ -11,7 +11,6 @@ export default function AuthGate({ onAuthed }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [networkDown, setNetworkDown] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useGSAP(() => {
@@ -26,7 +25,6 @@ export default function AuthGate({ onAuthed }) {
   function toggleMode() {
     setMode((m) => (m === 'login' ? 'register' : 'login'));
     setError('');
-    setNetworkDown(false);
   }
 
   async function doAuth() {
@@ -35,7 +33,6 @@ export default function AuthGate({ onAuthed }) {
       return;
     }
     setError('');
-    setNetworkDown(false);
     setBusy(true);
     try {
       const { user, token } =
@@ -44,13 +41,11 @@ export default function AuthGate({ onAuthed }) {
           : await register({ email, password, role });
       onAuthed({
         token,
-        user: { username: user.username, role: user.role, profileId: user.profileId },
-        demo: false,
+        user: { id: user.id, username: user.username, role: user.role, profileId: user.profileId },
       });
     } catch (e) {
       if (isNetworkError(e)) {
-        setError("Can't reach the VietNexus server.");
-        setNetworkDown(true);
+        setError("Can't reach the VietNexus server. Please try again.");
       } else {
         setError(e.message);
       }
@@ -61,18 +56,6 @@ export default function AuthGate({ onAuthed }) {
 
   function onPasswordKeyDown(e) {
     if (e.key === 'Enter') doAuth();
-  }
-
-  function continueDemo() {
-    onAuthed({
-      token: null,
-      user: {
-        username: email || 'founder@startup.vn',
-        role: role === 'investor' ? 'investor' : 'founder',
-        profileId: null,
-      },
-      demo: true,
-    });
   }
 
   return (
@@ -140,12 +123,6 @@ export default function AuthGate({ onAuthed }) {
           >
             {authCta}
           </button>
-
-          {networkDown && (
-            <button type="button" className="btn btn-ghost vn-auth-demo" onClick={continueDemo}>
-              Continue in demo mode
-            </button>
-          )}
 
           <div className="vn-auth-switch">
             {authSwitchText} <a onClick={toggleMode}>{authSwitchLink}</a>

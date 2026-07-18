@@ -31,11 +31,9 @@ export default function ProfileForm({
 
   const nameLabel = isInvestor ? 'Fund name' : 'Startup name';
   const namePlaceholder = isInvestor ? 'e.g. Mekong Capital' : 'e.g. enfarm';
-  const stageLabel = isInvestor ? 'Stage focus' : 'Stage';
-  const needLabel = isInvestor ? 'Collaboration need' : 'Funding need';
   const needPlaceholder = isInvestor
     ? 'What partnerships or deal flow are you looking for?'
-    : 'How much are you raising, and what for?';
+    : 'What collaboration or funding are you looking for?';
   const showSummary = showErrors && !allValid;
 
   let helperText;
@@ -100,7 +98,7 @@ export default function ProfileForm({
 
         <div className="vn-form-grid rise">
           <div>
-            <label className="label">{stageLabel} <span className="req">*</span></label>
+            <label className="label">Stage focus <span className="req">*</span></label>
             <select
               className={fieldClass('select', 'stage')}
               value={form.stage}
@@ -116,7 +114,7 @@ export default function ProfileForm({
             )}
           </div>
           <div>
-            <label className="label">Where you operate <span className="req">*</span></label>
+            <label className="label">Geography <span className="req">*</span></label>
             <input
               className={fieldClass('input', 'geography')}
               value={form.geography}
@@ -131,57 +129,117 @@ export default function ProfileForm({
 
         <div className="vn-form-grid rise">
           <div>
-            <label className="label">
-              Country <span className="vn-form-sector-hint">· optional</span>
-            </label>
+            <label className="label">Email <span className="req">*</span></label>
             <input
-              className="input"
-              value={form.country}
-              onChange={(e) => onField('country', e.target.value)}
-              placeholder="e.g. Vietnam"
+              type="email"
+              className={fieldClass('input', 'email')}
+              value={form.email}
+              onChange={(e) => onField('email', e.target.value)}
+              placeholder="e.g. hello@example.com"
             />
+            {showErrors && !validity.email && (
+              <div className="field-error">Enter a valid email address.</div>
+            )}
           </div>
           <div>
-            <label className="label">
-              Target region <span className="vn-form-sector-hint">· optional</span>
-            </label>
+            <label className="label">Phone number <span className="req">*</span></label>
             <input
-              className="input"
-              value={form.targetRegion}
-              onChange={(e) => onField('targetRegion', e.target.value)}
-              placeholder="e.g. Southeast Asia"
+              type="tel"
+              className={fieldClass('input', 'phone')}
+              value={form.phone}
+              onChange={(e) => onField('phone', e.target.value)}
+              placeholder="e.g. +84 90 123 4567"
             />
+            {showErrors && !validity.phone && (
+              <div className="field-error">Enter a valid phone number.</div>
+            )}
           </div>
         </div>
 
-        <div className="vn-form-grid rise">
-          <div>
-            <label className="label">
-              Number of employees <span className="vn-form-sector-hint">· optional</span>
-            </label>
-            <input
-              type="number"
-              min="0"
-              className="input"
-              value={form.numEmployees}
-              onChange={(e) => onField('numEmployees', e.target.value)}
-              placeholder="e.g. 12"
-            />
+        {isInvestor ? (
+          <>
+            <div className="vn-form-grid rise">
+              <div>
+                <label className="label">Average initial investment (USD) <span className="req">*</span></label>
+                <input
+                  type="number"
+                  min="0"
+                  className={fieldClass('input', 'avgInitialInvestment')}
+                  value={form.avgInitialInvestment}
+                  onChange={(e) => onField('avgInitialInvestment', e.target.value)}
+                  placeholder="e.g. 500000"
+                />
+                {showErrors && !validity.avgInitialInvestment && (
+                  <div className="field-error">Enter a valid amount.</div>
+                )}
+              </div>
+              <div>
+                <label className="label">Annual investment number <span className="req">*</span></label>
+                <input
+                  type="number"
+                  min="0"
+                  className={fieldClass('input', 'annualInvestmentCount')}
+                  value={form.annualInvestmentCount}
+                  onChange={(e) => onField('annualInvestmentCount', e.target.value)}
+                  placeholder="e.g. 10"
+                />
+                {showErrors && !validity.annualInvestmentCount && (
+                  <div className="field-error">Enter a valid number.</div>
+                )}
+              </div>
+            </div>
+
+            <div className="vn-form-grid rise">
+              <div>
+                <label className="label">Average startup holding period (years) <span className="req">*</span></label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.5"
+                  className={fieldClass('input', 'avgHoldingPeriod')}
+                  value={form.avgHoldingPeriod}
+                  onChange={(e) => onField('avgHoldingPeriod', e.target.value)}
+                  placeholder="e.g. 5"
+                />
+                {showErrors && !validity.avgHoldingPeriod && (
+                  <div className="field-error">Enter a valid number of years.</div>
+                )}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="vn-form-grid rise">
+            <div>
+              <label className="label">Year founded <span className="req">*</span></label>
+              <input
+                type="number"
+                min="1900"
+                max="2100"
+                className={fieldClass('input', 'yearFounded')}
+                value={form.yearFounded}
+                onChange={(e) => onField('yearFounded', e.target.value)}
+                placeholder="e.g. 2021"
+              />
+              {showErrors && !validity.yearFounded && (
+                <div className="field-error">Enter a 4-digit year.</div>
+              )}
+            </div>
+            <div>
+              <label className="label">Company size <span className="req">*</span></label>
+              <input
+                type="number"
+                min="1"
+                className={fieldClass('input', 'companySize')}
+                value={form.companySize}
+                onChange={(e) => onField('companySize', e.target.value)}
+                placeholder="e.g. 12"
+              />
+              {showErrors && !validity.companySize && (
+                <div className="field-error">Enter the number of employees.</div>
+              )}
+            </div>
           </div>
-          <div>
-            <label className="label">
-              ARR (USD) <span className="vn-form-sector-hint">· optional</span>
-            </label>
-            <input
-              type="number"
-              min="0"
-              className="input"
-              value={form.arr}
-              onChange={(e) => onField('arr', e.target.value)}
-              placeholder="e.g. 250000"
-            />
-          </div>
-        </div>
+        )}
 
         <div className="rise">
           <label className="label">
@@ -206,7 +264,7 @@ export default function ProfileForm({
         </div>
 
         <div className="rise">
-          <label className="label">{needLabel} <span className="req">*</span></label>
+          <label className="label">Collaboration need <span className="req">*</span></label>
           <textarea
             className={fieldClass('textarea', 'need')}
             value={form.need}

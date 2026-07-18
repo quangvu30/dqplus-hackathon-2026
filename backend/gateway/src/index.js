@@ -7,7 +7,7 @@ const host = process.env.HOST || '0.0.0.0';
 async function start() {
   await sequelize.authenticate();
   if (process.env.NODE_ENV !== 'production') {
-    await sequelize.sync();
+    await sequelize.sync({ alter: true });
   }
 
   app.listen(port, host, () => {

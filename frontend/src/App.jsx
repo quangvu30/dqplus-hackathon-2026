@@ -4,21 +4,32 @@ import AuthGate from './views/AuthGate.jsx';
 import ProfileForm from './views/ProfileForm.jsx';
 import Matches from './views/Matches.jsx';
 import MatchDetail from './views/MatchDetail.jsx';
-import { DATASETS, STARTUPS, INTENTS } from './data/ecosystem.js';
+import { INTENTS } from './data/ecosystem.js';
 import { genDraft } from './lib/draft.js';
-import { getProfile, saveProfile, toProfilePayload, fromProfile, ApiError } from './lib/api.js';
+import {
+  getProfile, saveProfile, toProfilePayload, fromProfile,
+  getMatches, extractProfile, matchToCandidate, ApiError,
+} from './lib/api.js';
 
 const SESSION_KEY = 'vn.session';
 
 const emptyForm = {
-  name: '', website: '', stage: '', geography: '', country: '', targetRegion: '',
-  numEmployees: '', arr: '', sectors: [], need: '', consent: false,
+  name: '', website: '', stage: '', geography: '', sectors: [], need: '',
+  email: '', phone: '',
+  avgInitialInvestment: '', annualInvestmentCount: '', avgHoldingPeriod: '',
+  yearFounded: '', companySize: '',
+  consent: false,
 };
+
+const idleMatches = { status: 'idle', candidates: [], error: '' };
 
 function loadSession() {
   try {
     const raw = localStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
+    const s = raw ? JSON.parse(raw) : null;
+    // Older sessions (or demo-mode ones) lack the user id the matching engine needs.
+    if (!s || !s.token || !s.user || !s.user.id) return null;
+    return s;
   } catch (e) {
     return null;
   }
@@ -58,6 +69,7 @@ export default function App() {
   const [view, setView] = useState('form');
   const [intent, setIntent] = useState('investors');
   const [topK, setTopK] = useState(5);
+  const [matchData, setMatchData] = useState(idleMatches);
   const [selCandidate, setSelCandidate] = useState(null);
   const [emailLang, setEmailLang] = useState('vi');
   const [copied, setCopied] = useState(false);
@@ -74,7 +86,7 @@ export default function App() {
     const s = session;
     if (!s) return;
     const mirror = loadProfileMirror(s.user.username);
-    if (s.user.profileId && !s.demo) {
+    if (s.user.profileId) {
       getProfile(s.token, s.user.profileId)
         .then((p) => {
           let f = fromProfile(p);
@@ -93,16 +105,55 @@ export default function App() {
           }
         });
     } else if (mirror) {
-      setForm(mirror.form);
+      setForm({ ...emptyForm, ...mirror.form });
       setStatus(mirror.status || 'draft');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  async function loadMatches() {
+    setMatchData({ status: 'loading', candidates: [], error: '' });
+    try {
+      let data;
+      try {
+        data = await getMatches({ userId: session.user.id, role });
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 404) {
+          // No extracted profile yet — build one from the saved profile, then retry.
+          await extractProfile(session.user.id);
+          data = await getMatches({ userId: session.user.id, role });
+        } else {
+          throw e;
+        }
+      }
+      setMatchData({
+        status: 'ready',
+        candidates: (data.matches || []).map((m) => matchToCandidate(m, role)),
+        error: '',
+      });
+    } catch (e) {
+      setMatchData({
+        status: 'error',
+        candidates: [],
+        error: e instanceof ApiError ? e.message : "Couldn't reach the matching service.",
+      });
+    }
+  }
+
+  const intentMeta = INTENTS.find((i) => i.id === intent) || INTENTS[0];
+
+  useEffect(() => {
+    if (view !== 'form' && intentMeta.live && matchData.status === 'idle' && session) {
+      loadMatches();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [view, intent, matchData.status]);
+
   function handleAuthed(newSession) {
     setSession(newSession);
     persistSession(newSession);
-    if (newSession.user.profileId && !newSession.demo) {
+    setMatchData(idleMatches);
+    if (newSession.user.profileId) {
       getProfile(newSession.token, newSession.user.profileId)
         .then((p) => {
           setForm({ ...fromProfile(p), consent: false });
@@ -133,6 +184,7 @@ export default function App() {
   }
 
   function validity(f) {
+    const isNum = (val) => val !== '' && Number.isFinite(Number(val)) && Number(val) >= 0;
     return {
       name: f.name.trim().length > 1,
       website: /\./.test(f.website.trim()) && f.website.trim().length > 3,
@@ -140,6 +192,18 @@ export default function App() {
       geography: f.geography.trim().length > 1,
       sectors: f.sectors.length > 0,
       need: f.need.trim().length > 2,
+      email: /^\S+@\S+\.\S+$/.test(f.email.trim()),
+      phone: f.phone.trim().length > 5,
+      ...(role === 'investor'
+        ? {
+            avgInitialInvestment: isNum(f.avgInitialInvestment),
+            annualInvestmentCount: isNum(f.annualInvestmentCount),
+            avgHoldingPeriod: isNum(f.avgHoldingPeriod),
+          }
+        : {
+            yearFounded: /^\d{4}$/.test(f.yearFounded.trim()),
+            companySize: isNum(f.companySize) && Number(f.companySize) > 0,
+          }),
       consent: f.consent === true,
     };
   }
@@ -149,17 +213,23 @@ export default function App() {
   const missingMap = {
     name: role === 'investor' ? 'fund name' : 'startup name',
     website: 'website',
-    stage: role === 'investor' ? 'stage focus' : 'stage',
+    stage: 'stage focus',
     geography: 'geography',
-    sectors: 'sectors',
-    need: role === 'investor' ? 'collaboration need' : 'funding need',
+    sectors: 'sector',
+    need: 'collaboration need',
+    email: 'email',
+    phone: 'phone number',
+    avgInitialInvestment: 'average initial investment',
+    annualInvestmentCount: 'annual investment number',
+    avgHoldingPeriod: 'average startup holding period',
+    yearFounded: 'year founded',
+    companySize: 'company size',
     consent: 'consent',
   };
   const missing = Object.keys(v).filter((k) => !v[k]).map((k) => missingMap[k]);
 
   async function persist(nextStatus) {
     persistProfileMirror(session.user.username, form, nextStatus);
-    if (session.demo) return;
     setSaving(true);
     setSaveError('');
     try {
@@ -169,8 +239,10 @@ export default function App() {
         setSession(next);
         persistSession(next);
       }
+      return true;
     } catch (e) {
       setSaveError(e instanceof ApiError ? e.message : "Couldn't reach the server. Your draft is saved locally.");
+      return false;
     } finally {
       setSaving(false);
     }
@@ -182,35 +254,43 @@ export default function App() {
     persist('draft');
   }
 
-  function markReady() {
-    if (allValid) {
-      setStatus('ready');
-      setShowErrors(false);
-      setView('matches');
-      persist('ready');
-    } else {
+  async function markReady() {
+    if (!allValid) {
       setShowErrors(true);
+      return;
     }
+    setStatus('ready');
+    setShowErrors(false);
+    const ok = await persist('ready');
+    if (ok) {
+      // Refresh the extracted profile + embedding so matches reflect the latest edits.
+      try {
+        await extractProfile(session.user.id);
+      } catch (e) {}
+    }
+    setMatchData(idleMatches);
+    setView('matches');
   }
 
   function logout() {
     setSession(null);
     persistSession(null);
+    setMatchData(idleMatches);
+    setForm(emptyForm);
+    setView('form');
   }
 
   if (!session) {
     return <AuthGate onAuthed={handleAuthed} />;
   }
 
-  const active = intent === 'investors' && role === 'investor' ? STARTUPS : DATASETS[intent];
-  const sorted = [...active].sort((a, b) => b.score - a.score);
+  const sorted = matchData.candidates;
   const shown = topK >= sorted.length ? sorted : sorted.slice(0, topK);
-  const items = shown.map((c) => ({ candidate: c, rank: sorted.indexOf(c) + 1 }));
+  const items = shown.map((c, i) => ({ candidate: c, rank: i + 1 }));
 
   const profileName = form.name || (role === 'investor' ? 'your fund' : 'your startup');
-  const metaCur = INTENTS.find((i) => i.id === intent) || INTENTS[0];
-  const title = intent === 'investors' && role === 'investor' ? 'Startups that fit your thesis.' : metaCur.title;
-  const sub = (intent === 'investors' && role === 'investor' ? 'Startups in {p}’s focus, ranked by fit.' : metaCur.sub).replace('{p}', profileName);
+  const title = intent === 'investors' && role === 'investor' ? 'Startups that fit your thesis.' : intentMeta.title;
+  const sub = (intent === 'investors' && role === 'investor' ? 'Startups in {p}’s focus, ranked by fit.' : intentMeta.sub).replace('{p}', profileName);
 
   function openMatch(item) {
     setSelCandidate(item.candidate);
@@ -226,7 +306,7 @@ export default function App() {
   }
 
   function draftTextFor(candidate) {
-    if (!candidate || candidate.draftError) return null;
+    if (!candidate) return null;
     return genDraft({
       who: form.name || (role === 'investor' ? 'our fund' : 'our startup'),
       need: form.need,
@@ -277,6 +357,10 @@ export default function App() {
           role={role}
           profileName={profileName}
           intent={intent}
+          live={intentMeta.live}
+          matchStatus={matchData.status}
+          matchError={matchData.error}
+          onRetry={loadMatches}
           onIntent={onIntentChange}
           topK={topK}
           onTopK={setTopK}

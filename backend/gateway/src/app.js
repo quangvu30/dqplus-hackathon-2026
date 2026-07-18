@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const swaggerUi = require("swagger-ui-express");
 const authRouter = require("./routes/auth.routes");
 const profileRouter = require("./routes/profile.routes");

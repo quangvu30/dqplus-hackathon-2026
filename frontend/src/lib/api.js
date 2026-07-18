@@ -59,15 +59,70 @@ export function saveProfile(token, profileId, payload) {
 export function toProfilePayload(form) {
   return {
     company_name: form.name,
-    country: form.country || null,
     stage: form.stage,
-    num_of_employees: form.numEmployees === '' ? null : Number(form.numEmployees),
     industry: form.sectors.join(','),
-    target_region: form.targetRegion || null,
-    arr: form.arr === '' ? null : Number(form.arr),
     where_you_operate: form.geography,
     website: form.website.split(',').map((s) => s.trim()).filter(Boolean),
     description_product: form.need,
+    email: form.email || null,
+    phone_number: form.phone || null,
+    avg_initial_investment: form.avgInitialInvestment === '' ? null : Number(form.avgInitialInvestment),
+    annual_investment_count: form.annualInvestmentCount === '' ? null : Number(form.annualInvestmentCount),
+    avg_holding_period: form.avgHoldingPeriod === '' ? null : Number(form.avgHoldingPeriod),
+    year_founded: form.yearFounded === '' ? null : Number(form.yearFounded),
+    num_of_employees: form.companySize === '' ? null : Number(form.companySize),
+  };
+}
+
+export function extractProfile(userId) {
+  return request('/extract/profile', { method: 'POST', body: { userId } });
+}
+
+export function getMatches({ userId, role }) {
+  const path = role === 'investor'
+    ? '/matches/investors/' + userId + '/founders'
+    : '/matches/founders/' + userId + '/investors';
+  return request(path + '?limit=50');
+}
+
+const INVESTOR_TYPES = {
+  vc: 'Venture Capital',
+  angel: 'Angel Investor',
+  cvc: 'Corporate VC',
+  pe: 'Private Equity',
+  'family-office': 'Family Office',
+};
+
+const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+
+export function matchToCandidate(m, role) {
+  const a = m.attributes || {};
+  const reasons = m.reasons || [];
+  const base = {
+    userId: m.userId,
+    score: Math.round(m.score * 100),
+    vectorScore: Math.round(m.vectorScore * 100),
+    attributeScore: Math.round(m.attributeScore * 100),
+    reasons,
+    rationale: reasons.length
+      ? cap(reasons.join(' · '))
+      : 'Ranked by semantic similarity between both profiles.',
+  };
+  if (role === 'investor') {
+    return {
+      ...base,
+      name: a.company_name || 'Unnamed startup',
+      type: 'Startup' + (a.stage ? ' · ' + cap(a.stage) : ''),
+      dot: '#3f8f6b',
+      sectors: (a.industry || []).map(cap),
+    };
+  }
+  return {
+    ...base,
+    name: a.firm_name || 'Unnamed investor',
+    type: INVESTOR_TYPES[a.investor_type] || 'Investor',
+    dot: '#b08636',
+    sectors: (a.sectors || []).map(cap),
   };
 }
 
@@ -77,12 +132,15 @@ export function fromProfile(p) {
     website: (p.website || []).join(', '),
     stage: p.stage || '',
     geography: p.where_you_operate || '',
-    country: p.country || '',
-    targetRegion: p.target_region || '',
-    numEmployees: p.num_of_employees == null ? '' : String(p.num_of_employees),
-    arr: p.arr == null ? '' : String(p.arr),
     sectors: p.industry ? p.industry.split(',') : [],
     need: p.description_product || '',
+    email: p.email || '',
+    phone: p.phone_number || '',
+    avgInitialInvestment: p.avg_initial_investment == null ? '' : String(p.avg_initial_investment),
+    annualInvestmentCount: p.annual_investment_count == null ? '' : String(p.annual_investment_count),
+    avgHoldingPeriod: p.avg_holding_period == null ? '' : String(p.avg_holding_period),
+    yearFounded: p.year_founded == null ? '' : String(p.year_founded),
+    companySize: p.num_of_employees == null ? '' : String(p.num_of_employees),
     consent: false,
   };
 }

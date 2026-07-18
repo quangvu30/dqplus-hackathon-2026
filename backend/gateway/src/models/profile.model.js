@@ -54,6 +54,30 @@ const Profile = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    phone_number: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    avg_initial_investment: {
+      type: DataTypes.DECIMAL(18, 2),
+      allowNull: true,
+    },
+    annual_investment_count: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    avg_holding_period: {
+      type: DataTypes.DECIMAL(5, 2),
+      allowNull: true,
+    },
+    year_founded: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     tableName: 'profiles',

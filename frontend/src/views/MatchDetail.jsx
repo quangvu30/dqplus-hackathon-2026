@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { WHY_NOW } from '../data/ecosystem.js';
 import { riseIn, prefersReduced } from '../lib/anim.js';
 import './matches.css';
 
@@ -25,21 +24,14 @@ export default function MatchDetail({ candidate, rank, intent, emailLang, onLang
   }, { scope: rootRef, dependencies: [candidate] });
 
   const breakdown = [
-    { label: 'Sector fit', val: clamp(candidate.score + 6) },
-    { label: 'Stage fit', val: clamp(candidate.score - 4) },
-    { label: 'Geography', val: clamp(candidate.score - 9) },
-    { label: 'Thesis alignment', val: clamp(candidate.score + 2) },
+    { label: 'Profile similarity', val: clamp(candidate.vectorScore) },
+    { label: 'Attribute fit', val: clamp(candidate.attributeScore) },
   ];
-  const confidencePct = clamp(candidate.score - 2) + '%';
-  const whyNow = WHY_NOW[intent] || WHY_NOW.partners;
-  const whyNot = 'Higher-scoring partners above offer a closer sector or stage fit for your current raise — revisit this one as your profile evolves.';
   const facts = [
     (intent === 'talent' ? 'Role · ' : 'Type · ') + candidate.type,
-    'Focus · ' + candidate.sectors.join(', '),
+    ...(candidate.sectors.length ? ['Focus · ' + candidate.sectors.join(', ')] : []),
     'Fit score · ' + candidate.score + '/100',
-    (candidate.sources.length || 'No') + ' public source' + (candidate.sources.length === 1 ? '' : 's') + ' checked',
   ];
-  const hasSources = candidate.sources.length > 0;
 
   return (
     <div className="vn-detail-root" ref={rootRef}>
@@ -72,7 +64,7 @@ export default function MatchDetail({ candidate, rank, intent, emailLang, onLang
       <section className="card rise vn-detail-section">
         <div className="vn-detail-breakdown-head">
           <div className="card-label">Fit breakdown</div>
-          <div className="vn-detail-breakdown-meta">Confidence {confidencePct} · rank #{rank}</div>
+          <div className="vn-detail-breakdown-meta">rank #{rank}</div>
         </div>
         {breakdown.map((b) => (
           <div className="vn-detail-bar-row" key={b.label}>
@@ -85,16 +77,18 @@ export default function MatchDetail({ candidate, rank, intent, emailLang, onLang
         ))}
       </section>
 
-      <div className="vn-detail-grid2 rise">
-        <section className="card vn-detail-section">
-          <div className="card-label accent">Why now</div>
-          <p className="vn-detail-why-text">{whyNow}</p>
+      {candidate.reasons.length > 0 && (
+        <section className="card rise vn-detail-section">
+          <div className="card-label vn-detail-facts-label">Match signals</div>
+          <div className="vn-detail-facts">
+            {candidate.reasons.map((r) => (
+              <div className="vn-detail-fact" key={r}>
+                <i className="vn-detail-fact-dot"></i>{r}
+              </div>
+            ))}
+          </div>
         </section>
-        <section className="card vn-detail-section">
-          <div className="card-label">Why not higher</div>
-          <p className="vn-detail-why-text">{whyNot}</p>
-        </section>
-      </div>
+      )}
 
       <section className="card rise vn-detail-section">
         <div className="card-label vn-detail-facts-label">Key facts</div>
@@ -108,22 +102,6 @@ export default function MatchDetail({ candidate, rank, intent, emailLang, onLang
       </section>
 
       <section className="card rise vn-detail-section">
-        <div className="card-label vn-detail-facts-label">Source links</div>
-        {hasSources ? (
-          <div className="vn-detail-sources">
-            {candidate.sources.map((s) => (
-              <a className="vn-detail-source" href={s.url} target="_blank" rel="noopener noreferrer" key={s.url}>
-                <span>{s.label}</span>
-                <span className="vn-detail-source-open">Open ↗</span>
-              </a>
-            ))}
-          </div>
-        ) : (
-          <div className="vn-detail-empty">No public sources found yet. This match used your profile and disclosed data only.</div>
-        )}
-      </section>
-
-      <section className="card rise vn-detail-section">
         <div className="vn-detail-draft-head">
           <div className="card-label">Draft introduction</div>
           {draftText && (
@@ -133,19 +111,13 @@ export default function MatchDetail({ candidate, rank, intent, emailLang, onLang
             </div>
           )}
         </div>
-        {draftText ? (
+        {draftText && (
           <>
             <div className="vn-detail-draft-box">{draftText}</div>
             <div className="vn-detail-copy-row">
               <button type="button" className="btn-ghost vn-detail-copy-btn" onClick={onCopy}>{copied ? '✓ Copied' : 'Copy draft'}</button>
             </div>
           </>
-        ) : (
-          <div className="vn-detail-error-card">
-            <div className="vn-detail-error-title">Draft couldn't be generated</div>
-            <div className="vn-detail-error-body">The advisor hit an error preparing this introduction. Your data is safe — try again.</div>
-            <button type="button" className="vn-detail-retry-btn" onClick={() => {}}>Retry</button>
-          </div>
         )}
       </section>
     </div>
