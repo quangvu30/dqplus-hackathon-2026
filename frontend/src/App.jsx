@@ -1,10 +1,23 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import Header from './components/Header.jsx';
 import Landing from './views/Landing.jsx';
-import AuthGate from './views/AuthGate.jsx';
-import ProfileForm from './views/ProfileForm.jsx';
-import Matches from './views/Matches.jsx';
-import MatchDetail from './views/MatchDetail.jsx';
+
+// Views behind the landing are lazy: smaller first paint, chunks load on demand.
+const AuthGate = lazy(() => import('./views/AuthGate.jsx'));
+const ProfileForm = lazy(() => import('./views/ProfileForm.jsx'));
+const Matches = lazy(() => import('./views/Matches.jsx'));
+const MatchDetail = lazy(() => import('./views/MatchDetail.jsx'));
+
+// Quiet page-header ghost shown while a lazy view chunk loads (no spinner).
+function ViewFallback() {
+  return (
+    <div className="vn-view-loading" aria-busy="true" aria-label="Loading">
+      <span className="vn-skel vn-skel-eyebrow" />
+      <span className="vn-skel vn-skel-title" />
+      <span className="vn-skel vn-skel-lede" />
+    </div>
+  );
+}
 import { INTENTS } from './data/ecosystem.js';
 import { genDraft } from './lib/draft.js';
 import {
@@ -76,6 +89,13 @@ export default function App() {
   const [emailLang, setEmailLang] = useState('vi');
   const [copied, setCopied] = useState(false);
 
+  // True while the saved profile is being fetched on first load; the form shows
+  // a skeleton instead of empty fields that pop in.
+  const [hydrating, setHydrating] = useState(() => {
+    const s = loadSession();
+    return !!(s && s.user.profileId);
+  });
+
   const hydrated = useRef(false);
 
   useEffect(() => {
@@ -105,7 +125,8 @@ export default function App() {
             setSession(null);
             persistSession(null);
           }
-        });
+        })
+        .finally(() => setHydrating(false));
     } else if (mirror) {
       setForm({ ...emptyForm, ...mirror.form });
       setStatus(mirror.status || 'draft');
@@ -156,6 +177,7 @@ export default function App() {
     persistSession(newSession);
     setMatchData(idleMatches);
     if (newSession.user.profileId) {
+      setHydrating(true);
       getProfile(newSession.token, newSession.user.profileId)
         .then((p) => {
           setForm({ ...fromProfile(p), consent: false });
@@ -166,7 +188,8 @@ export default function App() {
             setSession(null);
             persistSession(null);
           }
-        });
+        })
+        .finally(() => setHydrating(false));
     }
   }
 
@@ -284,7 +307,11 @@ export default function App() {
 
   if (!session) {
     if (!entered) return <Landing onEnter={() => setEntered(true)} />;
-    return <AuthGate onAuthed={handleAuthed} />;
+    return (
+      <Suspense fallback={<ViewFallback />}>
+        <AuthGate onAuthed={handleAuthed} />
+      </Suspense>
+    );
   }
 
   const sorted = matchData.candidates;
@@ -338,9 +365,11 @@ export default function App() {
   return (
     <div className="vn-shell">
       <Header session={session} status={status} onLogout={logout} />
+      <Suspense fallback={<ViewFallback />}>
       {view === 'form' && (
         <ProfileForm
           role={role}
+          hydrating={hydrating}
           form={form}
           onField={setField}
           onToggleSector={toggleSector}
@@ -388,6 +417,7 @@ export default function App() {
           onBack={() => setView('matches')}
         />
       )}
+      </Suspense>
     </div>
   );
 }
