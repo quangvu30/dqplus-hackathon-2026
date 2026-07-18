@@ -53,9 +53,11 @@ def build_rank_prompt(startup_view: dict, candidate_views: list[dict], *,
     return f"""You are a match analyst at Vietnam's National Innovation Center (NIC).
 
 Rank how well each PARTNER fits this STARTUP for a deal-flow introduction, then explain
-the top {top_k}. Partners span four types — investor (funding), corporation (pilots /
-strategic partnership), university & research_institution (R&D collaboration). Judge fit
-on sector/technology alignment, the startup's `looking_for`, and stage/geography signals.
+the top {top_k}. Partners span several types — investor (funding), corporation (pilots /
+strategic partnership), customer (buys the startup's product), partner (accelerators /
+programs / strategic allies), mentor (advisory networks), talent (hiring pipelines),
+university & research_institution (R&D collaboration). Judge fit on sector/technology
+alignment, the startup's `looking_for`, and stage/geography signals.
 
 STARTUP
 {json.dumps(startup_view, ensure_ascii=False, indent=2)}

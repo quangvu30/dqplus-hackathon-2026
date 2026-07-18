@@ -38,6 +38,18 @@ _DASHBOARD = Path(__file__).resolve().parent.parent / "dashboard" / "index.html"
 # Partner entity types (spec §5.1). Everything else is a startup.
 PARTNER_TYPES = ["investor", "corporation", "university", "research_institution"]
 
+# Multi-directional matching: the full partner universe, and the frontend intent tabs
+# mapped onto the entity types each one searches. `startups` serves the reverse
+# direction (investor/customer/mentor/... looking at startups).
+ALL_PARTNER_TYPES = PARTNER_TYPES + ["customer", "partner", "mentor", "talent"]
+INTENT_TYPES = {
+    "investors": ["investor"],
+    "startups": ["startup"],
+    "customers": ["customer", "corporation"],
+    "partners": ["partner", "mentor", "university", "research_institution"],
+    "talent": ["talent"],
+}
+
 # User profiles live in the separate backend DB; the platform fetches them from the
 # extract service over HTTP (GET /extracted/:userId) for the by-user /matches routes.
 EXTRACT_SERVICE_URL = os.environ.get("EXTRACT_SERVICE_URL", "http://extract:3003").rstrip("/")
@@ -514,6 +526,56 @@ async def matches_investor_to_startups(user_id: str,
                                            None, description="Comma-separated target types. "
                                                              "Default: 'startup'.")):
     return await _rag_match_by_user(user_id, ["startup"], types, limit, rerank)
+
+
+@app.get("/matches/users/{user_id}/{intent}")
+async def matches_user_by_intent(user_id: str, intent: str,
+                                 limit: int = Query(10, ge=1, le=50),
+                                 rerank: bool = Query(False),
+                                 types: str | None = Query(
+                                     None,
+                                     description="Comma-separated target types to override "
+                                                 "the intent's default set.")):
+    """Role-agnostic RAG match for a frontend intent tab. Intent -> target entity
+    types via INTENT_TYPES (investors / startups / customers / partners / talent);
+    the requester's profile is self-fetched from the extract service."""
+    if intent not in INTENT_TYPES:
+        raise HTTPException(404, f"unknown intent {intent!r}; one of {sorted(INTENT_TYPES)}")
+    return await _rag_match_by_user(user_id, INTENT_TYPES[intent], types, limit, rerank)
+
+
+@app.get("/entities/{entity_id}/rag-matches")
+async def entity_rag_matches(entity_id: str,
+                             limit: int = Query(10, ge=1, le=50),
+                             rerank: bool = Query(False),
+                             types: str | None = Query(
+                                 None,
+                                 description="Comma-separated target types. Default: "
+                                             "'startup' for partner-side entities; the "
+                                             "full partner set for a startup.")):
+    """Reverse-direction RAG match for a corpus entity (no user account needed):
+    an investor / customer / mentor / talent entity is matched against startups,
+    and a startup entity against the full partner universe."""
+    pool = _pool(app)
+    row = await pool.fetchrow(
+        "SELECT id, type, name, profile FROM entities WHERE id = $1", entity_id)
+    if row is None:
+        raise HTTPException(404, "entity not found")
+    profile = row["profile"]
+    if isinstance(profile, str):
+        profile = json.loads(profile) if profile else {}
+    default_types = ALL_PARTNER_TYPES if row["type"] == "startup" else ["startup"]
+    result = await embedding_matcher.match(
+        pool,
+        query_profile={"name": row["name"], "profile": profile or {}},
+        target_types=_target_types(default_types, types),
+        limit=limit,
+        rerank=rerank,
+    )
+    # A corpus entity always matches itself at distance ~0 — drop it.
+    matches = [m for m in result["matches"] if m["id"] != entity_id]
+    return {"entityId": row["id"], "entityType": row["type"], "entityName": row["name"],
+            "matches": matches}
 
 
 # --------------------------------------------------------------------------- #

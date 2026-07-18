@@ -22,16 +22,19 @@ from typing import Protocol, runtime_checkable
 
 from spine.ids import slugify
 
-PARTNER_TYPES = ("investor", "corporation", "university", "research_institution")
+PARTNER_TYPES = ("investor", "corporation", "university", "research_institution",
+                 "customer", "partner", "mentor", "talent")
 
 # looking_for purpose -> partner types it implies (spec §6 rule-filter / dealflow §1).
 PURPOSE_TYPES: dict[str, set[str]] = {
     "funding": {"investor"},
-    "corporate_pilot": {"corporation"},
-    "strategic_partnership": {"corporation"},
-    "market_access": {"corporation"},
-    "rd_collaboration": {"university", "research_institution"},
-    "talent": {"university", "research_institution"},
+    "corporate_pilot": {"corporation", "customer"},
+    "strategic_partnership": {"corporation", "partner"},
+    "market_access": {"corporation", "customer", "partner"},
+    "rd_collaboration": {"university", "research_institution", "partner"},
+    "talent": {"talent", "university", "research_institution"},
+    "mentorship": {"mentor", "partner"},
+    "customers": {"customer"},
 }
 
 # Bilingual sector normalization (R2). raw tag -> canonical English tag. Aligned with the

@@ -1,0 +1,14 @@
+{
+  "entity_type": "partner",
+  "source": "Public Vietnamese startup-ecosystem programs and hubs — compiled 2026-07-19",
+  "note": "Seed = names + light hints only. type partner = accelerator / incubator / ecosystem program that partners with startups (not an equity-first fund). Enrichment agents produce the real sourced profiles.",
+  "partners": [
+    {"name": "Vietnam Silicon Valley Accelerator (VSV)", "country": "Vietnam", "hint_website": "vsv.vn", "sectors": ["ai", "fintech", "saas"], "note": "Pioneer government-backed accelerator program"},
+    {"name": "Zone Startups Vietnam", "country": "Vietnam", "hint_website": "zonestartups.vn", "sectors": ["fintech", "saas", "ai"], "note": "Ryerson Futures network accelerator in HCMC"},
+    {"name": "Saigon Innovation Hub (SIHUB)", "country": "Vietnam", "hint_website": "sihub.gov.vn", "sectors": ["ai", "edtech", "digital_transformation"], "note": "HCMC Department of Science & Technology innovation hub"},
+    {"name": "Songhan Incubator", "country": "Vietnam", "hint_website": "shi.vn", "sectors": ["tourism", "agritech", "digital_transformation"], "note": "Danang-based incubator, central Vietnam ecosystem"},
+    {"name": "Swiss Entrepreneurship Program Vietnam", "country": "Vietnam", "hint_website": "swissep.org", "sectors": ["agritech", "healthtech", "cleantech"], "note": "Swiss EP — international ecosystem-building program"},
+    {"name": "BK Holdings", "country": "Vietnam", "hint_website": "bkholdings.com.vn", "sectors": ["deep_tech", "semiconductor", "robotics"], "note": "HUST university enterprise: tech-transfer + incubation"},
+    {"name": "National Startup Support Center (NSSC)", "country": "Vietnam", "hint_website": "nssc.gov.vn", "sectors": ["ai", "agritech", "edtech"], "note": "MOST national startup support center (Project 844)"}
+  ]
+}

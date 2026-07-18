@@ -82,11 +82,11 @@ export function extractProfile(userId) {
   return request(AGENTS + '/extract/profile', { method: 'POST', body: { userId } });
 }
 
-export function getMatches({ userId, role }) {
-  const path = role === 'investor'
-    ? ROOT + '/matches/investors/' + userId + '/founders'
-    : ROOT + '/matches/founders/' + userId + '/investors';
-  return request(path + '?limit=50');
+export function getMatches({ userId, role, intent = 'investors' }) {
+  // Every intent tab maps onto /matches/users/{id}/{intent}; an investor's
+  // "investors" tab means the reverse direction (startups that fit the thesis).
+  const mapped = intent === 'investors' && role === 'investor' ? 'startups' : intent;
+  return request(ROOT + '/matches/users/' + userId + '/' + mapped + '?limit=50');
 }
 
 // Composite ranked list, forwarded by the gateway to the Python matching API
@@ -104,6 +104,10 @@ const ENTITY_TYPES = {
   corporation: { label: 'Corporation', dot: '#a2603f' },
   university: { label: 'University', dot: '#5b7a9d' },
   research_institution: { label: 'Research institute', dot: '#7f6890' },
+  customer: { label: 'Customer', dot: '#8f5f5f' },
+  partner: { label: 'Partner', dot: '#5f8a8f' },
+  mentor: { label: 'Mentor', dot: '#948457' },
+  talent: { label: 'Talent', dot: '#6f7f5a' },
 };
 
 const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);

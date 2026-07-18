@@ -145,12 +145,13 @@ class MatchmakerStore:
 
     # ---------- matches (app tables) ----------
 
-    async def list_ready_partners(self) -> list[dict]:
+    async def list_ready_partners(self, types: list[str] | None = None) -> list[dict]:
         """All onboarded partner entities (candidates for the rule-filter)."""
         rows = await self._pool.fetch(
             "SELECT id, type, name, profile FROM entities "
             "WHERE type = ANY($1::text[]) AND status = 'ready' ORDER BY id",
-            ["investor", "corporation", "university", "research_institution"],
+            types or ["investor", "corporation", "university", "research_institution",
+                      "customer", "partner", "mentor", "talent"],
         )
         out = []
         for r in rows:

@@ -1,0 +1,15 @@
+{
+  "entity_type": "customer",
+  "source": "Public knowledge of major Vietnamese enterprises with active innovation/digital-transformation programs — compiled 2026-07-19",
+  "note": "Seed = names + light sector-demand hints only. type customer = enterprise that BUYS startup products (potential customer side of matching). Enrichment agents produce the real sourced profiles.",
+  "customers": [
+    {"name": "Vinamilk", "country": "Vietnam", "hint_website": "vinamilk.com.vn", "sectors": ["agritech", "supply_chain", "sustainability"], "note": "Dairy giant; invests in smart agriculture, cold-chain logistics and ESG tech"},
+    {"name": "Masan Group", "country": "Vietnam", "hint_website": "masangroup.com", "sectors": ["retail", "supply_chain", "ai", "fintech"], "note": "Consumer-retail conglomerate; WinCommerce retail network digitalization"},
+    {"name": "Mobile World Investment (The Gioi Di Dong)", "country": "Vietnam", "hint_website": "mwg.vn", "sectors": ["retail", "logistics", "ai"], "note": "Largest mobile/electronics retailer; omnichannel + logistics tech buyer"},
+    {"name": "FPT Retail", "country": "Vietnam", "hint_website": "frt.vn", "sectors": ["retail", "healthtech", "ai"], "note": "Retail + Long Chau pharmacy chain; digital health and retail AI demand"},
+    {"name": "Techcombank", "country": "Vietnam", "hint_website": "techcombank.com.vn", "sectors": ["fintech", "ai", "digital_transformation"], "note": "Leading private bank; heavy fintech/AI adoption programs"},
+    {"name": "Vietjet Air", "country": "Vietnam", "hint_website": "vietjetair.com", "sectors": ["ai", "logistics", "digital_transformation"], "note": "Low-cost airline; digital ops, dynamic pricing and cargo-logistics tech"},
+    {"name": "Saigon Co.op", "country": "Vietnam", "hint_website": "saigonco-op.com.vn", "sectors": ["retail", "supply_chain", "agritech"], "note": "Retail cooperative; fresh-food supply-chain and traceability solutions"},
+    {"name": "Hoa Phat Group", "country": "Vietnam", "hint_website": "hoaphat.com.vn", "sectors": ["cleantech", "energy", "digital_transformation"], "note": "Steel/industrial group; energy-efficiency and industrial-automation demand"}
+  ]
+}

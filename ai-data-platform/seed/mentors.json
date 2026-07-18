@@ -1,0 +1,13 @@
+{
+  "entity_type": "mentor",
+  "source": "Public Vietnamese mentor networks and advisory organizations — compiled 2026-07-19",
+  "note": "Seed = names + light hints only. type mentor = mentor NETWORK / advisory organization (organizations, not private individuals — no PII). Enrichment agents produce the real sourced profiles.",
+  "mentors": [
+    {"name": "Vietnam Mentors Initiative (VMI)", "country": "Vietnam", "hint_website": "vietnammentors.vn", "sectors": ["ai", "fintech", "saas"], "note": "National volunteer mentor network for startups"},
+    {"name": "SME Mentoring Network Vietnam", "country": "Vietnam", "hint_website": "smementoring.vn", "sectors": ["retail", "agritech", "supply_chain"], "note": "HCMC-rooted mentoring network for small businesses and founders"},
+    {"name": "Endeavor Vietnam", "country": "Vietnam", "hint_website": "endeavor.org.vn", "sectors": ["fintech", "saas", "logistics"], "note": "Global scale-up mentor network, Vietnam office"},
+    {"name": "Founder Institute Vietnam", "country": "Vietnam", "hint_website": "fi.co", "sectors": ["saas", "ai", "edtech"], "note": "Pre-seed founder mentorship program, HCMC chapter"},
+    {"name": "Lead The Change", "country": "Vietnam", "hint_website": "leadthechange.asia", "sectors": ["edtech", "sustainability", "ai"], "note": "Youth entrepreneurship mentoring and leadership programs"},
+    {"name": "WISE - Women's Initiative for Startups and Entrepreneurship", "country": "Vietnam", "hint_website": "wise.org.vn", "sectors": ["fintech", "edtech", "healthtech"], "note": "Mentoring and acceleration for women-led startups"}
+  ]
+}

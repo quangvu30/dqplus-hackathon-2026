@@ -1,0 +1,13 @@
+{
+  "entity_type": "talent",
+  "source": "Public Vietnamese tech-talent platforms and training pipelines — compiled 2026-07-19",
+  "note": "Seed = names + light hints only. type talent = talent PLATFORM / training pipeline that supplies candidates to startups (organizations, not private individuals — no PII). Enrichment agents produce the real sourced profiles.",
+  "talents": [
+    {"name": "TopDev", "country": "Vietnam", "hint_website": "topdev.vn", "sectors": ["ai", "saas", "fintech"], "note": "IT recruitment platform + developer community"},
+    {"name": "ITviec", "country": "Vietnam", "hint_website": "itviec.com", "sectors": ["ai", "saas", "fintech"], "note": "Leading IT job platform for Vietnamese developers"},
+    {"name": "VietnamWorks", "country": "Vietnam", "hint_website": "vietnamworks.com", "sectors": ["digital_transformation", "retail", "fintech"], "note": "Navigos Group's largest general job platform"},
+    {"name": "CoderSchool", "country": "Vietnam", "hint_website": "coderschool.vn", "sectors": ["ai", "data_science", "saas"], "note": "Full-stack + machine-learning bootcamp, job-ready engineers"},
+    {"name": "MindX Technology School", "country": "Vietnam", "hint_website": "mindx.edu.vn", "sectors": ["ai", "edtech", "saas"], "note": "Tech school network training developers and designers"},
+    {"name": "FUNiX", "country": "Vietnam", "hint_website": "funix.edu.vn", "sectors": ["ai", "saas", "digital_transformation"], "note": "FPT online software-engineering education, mentor-led"}
+  ]
+}

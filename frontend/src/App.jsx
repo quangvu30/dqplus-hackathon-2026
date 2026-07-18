@@ -141,12 +141,12 @@ export default function App() {
     try {
       let data;
       try {
-        data = await getMatches({ userId: session.user.id, role });
+        data = await getMatches({ userId: session.user.id, role, intent });
       } catch (e) {
         if (e instanceof ApiError && e.status === 404) {
           // No extracted profile yet — build one from the saved profile, then retry.
           await extractProfile(session.user.id);
-          data = await getMatches({ userId: session.user.id, role });
+          data = await getMatches({ userId: session.user.id, role, intent });
         } else {
           throw e;
         }
@@ -343,6 +343,8 @@ export default function App() {
     setMatchFilter({ type: 'all', sectors: [] });
     setSelCandidate(null);
     setCopied(false);
+    // Each intent queries a different corpus slice — reset so the effect refetches.
+    if (id !== intent) setMatchData(idleMatches);
   }
 
   function draftTextFor(candidate) {
