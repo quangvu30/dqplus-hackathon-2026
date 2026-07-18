@@ -36,3 +36,4 @@ Claude-Sessions/
 
 # Redaction-tool mapping store (contains real values)
 data/mappings.json
+.claude/skills/pitch-deck-creator-workspace/

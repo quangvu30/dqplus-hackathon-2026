@@ -1,0 +1,54 @@
+{
+  "skill_name": "pitch-deck-creator",
+  "evals": [
+    {
+      "id": 0,
+      "name": "investor-deck-vietnexus",
+      "prompt": "We're raising a seed round for VietNexus, an 'Innovation OS' that matches Vietnamese startups with investors, corporate partners, and universities using semantic RAG + graph-based relationship matching. We have a working platform live at dqplus.ddns.net, three pilot universities interested, and we're asking for $500k. I'm pitching to a Southeast-Asia-focused VC next week in a 10 minute slot. Create the pitch deck.",
+      "expected_output": "A deck-spec.md following the investor structure (10-12 slides) with story-headline per slide, bullets, visual suggestions, speaker notes, plus a valid Slidev slides.md with speaker notes and a clear $500k ask slide.",
+      "files": [],
+      "assertions": [
+        "deck-spec.md exists and every slide entry has a Headline, Visual suggestion, and Speaker notes",
+        "slides.md exists and is structurally valid Slidev (opening headmatter block, slides separated by --- lines)",
+        "every slide in slides.md carries speaker notes as a trailing HTML comment block",
+        "deck follows the investor structure with 10-12 slides covering problem, solution, market, traction, team, and ask",
+        "the $500k ask appears on a dedicated ask slide",
+        "slide headlines are takeaway sentences, not bare labels like 'Market Size' or 'Team'",
+        "slide bodies are concise: no more than 5 bullets and roughly 30 words per slide body"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "sales-deck-bank-cto",
+      "prompt": "need a sales deck — we sell DataTrust, a data-quality monitoring SaaS, and I've got a 20 min meeting with the CTO and head of data at a mid-size Vietnamese bank (they've had two regulatory reporting incidents this year caused by bad data). pricing is $3k/mo standard, $8k/mo enterprise. goal of the meeting is to get them to commit to a 6-week paid pilot",
+      "expected_output": "A deck-spec.md following the sales structure (8-10 slides) framed around the bank's problem and cost of inaction, with the pilot as the explicit next-steps ask, plus a valid Slidev slides.md.",
+      "files": [],
+      "assertions": [
+        "deck-spec.md exists and every slide entry has a Headline, Visual suggestion, and Speaker notes",
+        "slides.md exists and is structurally valid Slidev (opening headmatter block, slides separated by --- lines)",
+        "every slide in slides.md carries speaker notes as a trailing HTML comment block",
+        "deck follows the sales structure: the bank's problem and cost of inaction come before the product pitch",
+        "the deck personalizes to the prospect by referencing the regulatory reporting incidents",
+        "a pricing slide presents both the $3k/mo and $8k/mo tiers",
+        "the final ask is explicitly the 6-week paid pilot with concrete next steps",
+        "slide headlines are takeaway sentences, not bare labels"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "demo-day-underspecified",
+      "prompt": "i need slides for demo day next friday. 5 minutes. we do AI-powered matching for startups and investors. make it punchy",
+      "expected_output": "A compressed ~5-6 slide deck (problem, solution, demo, traction/validation, team, ask) with explicitly stated assumptions filling the gaps (company name, ask, traction), plus a valid Slidev slides.md.",
+      "files": [],
+      "assertions": [
+        "deck-spec.md exists and every slide entry has a Headline, Visual suggestion, and Speaker notes",
+        "slides.md exists and is structurally valid Slidev (opening headmatter block, slides separated by --- lines)",
+        "every slide in slides.md carries speaker notes as a trailing HTML comment block",
+        "deck is compressed for the 5-minute format: roughly 5-7 content slides, not a full 12-slide investor deck",
+        "assumptions made to fill the underspecified prompt (name, ask, traction) are explicitly stated rather than silently invented as fact",
+        "the final content slide contains a clear ask",
+        "slide headlines are takeaway sentences, not bare labels"
+      ]
+    }
+  ]
+}
