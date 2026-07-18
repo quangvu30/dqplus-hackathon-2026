@@ -57,6 +57,60 @@
   font-weight: 600;
 }
 
+/* ── Filters (type / sector chips over the loaded list) ── */
+.vn-match-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.vn-match-filter-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.vn-match-filter-label {
+  min-width: 48px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vn-match-filter-chip {
+  padding: 5px 13px;
+  border: 1px solid var(--input-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.vn-match-filter-chip:hover {
+  border-color: var(--input-border-hover);
+  background: var(--input-bg);
+}
+
+.vn-match-filter-chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.vn-match-filter-chip.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
 .vn-match-count-row {
   display: flex;
   align-items: center;

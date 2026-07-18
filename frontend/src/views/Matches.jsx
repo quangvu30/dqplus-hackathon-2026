@@ -7,7 +7,12 @@ import './matches.css';
 
 const SKELETON_ROWS = [0, 1, 2];
 
-export default function Matches({ role, profileName, intent, live, matchStatus, matchError, onRetry, onIntent, topK, onTopK, items, total, title, sub, onOpen, onBackToForm }) {
+const typeLabel = (t) => {
+  const s = t.replace(/_/g, ' ');
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
+
+export default function Matches({ role, profileName, intent, live, matchStatus, matchError, onRetry, onIntent, topK, onTopK, filter, onFilter, typeOptions, sectorOptions, items, total, title, sub, onOpen, onBackToForm }) {
   const rootRef = useRef(null);
 
   useGSAP(() => {
@@ -15,9 +20,11 @@ export default function Matches({ role, profileName, intent, live, matchStatus, 
     const cards = rootRef.current.querySelectorAll('.vn-match-card');
     if (!cards.length) return;
     gsap.from(cards, { y: 14, autoAlpha: 0, duration: 0.45, ease: 'power2.out', stagger: 0.05, clearProps: 'all' });
-  }, { scope: rootRef, dependencies: [intent, topK, matchStatus] });
+  }, { scope: rootRef, dependencies: [intent, topK, matchStatus, filter] });
 
   const ready = live && matchStatus === 'ready';
+  const filtering = filter.type !== 'all' || filter.sector !== 'all';
+  const clearFilters = () => onFilter({ type: 'all', sector: 'all' });
 
   const openCard = (candidate, rank) => onOpen({ candidate, rank });
 
@@ -40,6 +47,41 @@ export default function Matches({ role, profileName, intent, live, matchStatus, 
           </button>
         ))}
       </div>
+
+      {ready && (typeOptions.length > 1 || sectorOptions.length > 1) && (
+        <div className="vn-match-filters">
+          {typeOptions.length > 1 && (
+            <div className="vn-match-filter-group">
+              <span className="vn-match-filter-label">Type</span>
+              {['all', ...typeOptions].map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  className={'vn-match-filter-chip' + (filter.type === t ? ' active' : '')}
+                  onClick={() => onFilter({ ...filter, type: t })}
+                >
+                  {t === 'all' ? 'All' : typeLabel(t)}
+                </button>
+              ))}
+            </div>
+          )}
+          {sectorOptions.length > 1 && (
+            <div className="vn-match-filter-group">
+              <span className="vn-match-filter-label">Sector</span>
+              {['all', ...sectorOptions].map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  className={'vn-match-filter-chip' + (filter.sector === s ? ' active' : '')}
+                  onClick={() => onFilter({ ...filter, sector: s })}
+                >
+                  {s === 'all' ? 'All' : s}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {ready && items.length > 0 && (
         <div className="vn-match-count-row">
@@ -87,7 +129,14 @@ export default function Matches({ role, profileName, intent, live, matchStatus, 
 
       {ready && items.length === 0 && (
         <div className="vn-match-state">
-          <p className="vn-match-state-text">No matches yet. As more {role === 'investor' ? 'startups' : 'investors'} join the ecosystem, they'll show up here ranked by fit.</p>
+          {filtering ? (
+            <>
+              <p className="vn-match-state-text">No matches under these filters.</p>
+              <button type="button" className="btn btn-ghost" onClick={clearFilters}>Clear filters</button>
+            </>
+          ) : (
+            <p className="vn-match-state-text">No matches yet. As more {role === 'investor' ? 'startups' : 'investors'} join the ecosystem, they'll show up here ranked by fit.</p>
+          )}
         </div>
       )}
 

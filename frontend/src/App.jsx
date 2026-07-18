@@ -84,6 +84,8 @@ export default function App() {
   const [view, setView] = useState('form');
   const [intent, setIntent] = useState('investors');
   const [topK, setTopK] = useState(5);
+  // Client-side match filters over the loaded candidate list ('all' = off).
+  const [matchFilter, setMatchFilter] = useState({ type: 'all', sector: 'all' });
   const [matchData, setMatchData] = useState(idleMatches);
   const [selCandidate, setSelCandidate] = useState(null);
   const [emailLang, setEmailLang] = useState('vi');
@@ -315,7 +317,14 @@ export default function App() {
   }
 
   const sorted = matchData.candidates;
-  const shown = topK >= sorted.length ? sorted : sorted.slice(0, topK);
+  const typeOptions = [...new Set(sorted.map((c) => c.entityType))];
+  const sectorOptions = [...new Set(sorted.flatMap((c) => c.sectors))].sort();
+  const filtered = sorted.filter(
+    (c) =>
+      (matchFilter.type === 'all' || c.entityType === matchFilter.type) &&
+      (matchFilter.sector === 'all' || c.sectors.includes(matchFilter.sector))
+  );
+  const shown = topK >= filtered.length ? filtered : filtered.slice(0, topK);
   const items = shown.map((c, i) => ({ candidate: c, rank: i + 1 }));
 
   const profileName = form.name || (role === 'investor' ? 'your fund' : 'your startup');
@@ -331,6 +340,7 @@ export default function App() {
   function onIntentChange(id) {
     setIntent(id);
     setTopK(5);
+    setMatchFilter({ type: 'all', sector: 'all' });
     setSelCandidate(null);
     setCopied(false);
   }
@@ -359,8 +369,8 @@ export default function App() {
     setCopied(false);
   }
 
-  const cand = selCandidate || sorted[0];
-  const candRank = cand ? sorted.indexOf(cand) + 1 : 0;
+  const cand = selCandidate || filtered[0];
+  const candRank = cand ? filtered.indexOf(cand) + 1 : 0;
 
   return (
     <div className="vn-shell">
@@ -396,8 +406,12 @@ export default function App() {
           onIntent={onIntentChange}
           topK={topK}
           onTopK={setTopK}
+          filter={matchFilter}
+          onFilter={setMatchFilter}
+          typeOptions={typeOptions}
+          sectorOptions={sectorOptions}
           items={items}
-          total={sorted.length}
+          total={filtered.length}
           title={title}
           sub={sub}
           onOpen={openMatch}
