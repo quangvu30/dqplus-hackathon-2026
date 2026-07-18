@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const authRouter = require('./routes/auth.routes');
 const profileRouter = require('./routes/profile.routes');
@@ -8,6 +9,7 @@ const swaggerSpec = require('./config/swagger');
 
 const app = express();
 
+app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
 app.use(express.json());
 
 app.get('/health', async (req, res) => {
