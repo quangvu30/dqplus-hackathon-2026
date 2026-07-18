@@ -1,5 +1,15 @@
 const { Profile, User } = require('../models');
 
+function triggerExtraction(userId) {
+  const baseUrl = process.env.EXTRACT_SERVICE_URL;
+  if (!baseUrl) return;
+  fetch(`${baseUrl}/extract/profile`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ userId }),
+  }).catch((err) => console.error('extract trigger failed:', err.message));
+}
+
 async function createProfile(userId, data) {
   const user = await User.findByPk(userId);
   if (!user) {
@@ -16,6 +26,7 @@ async function createProfile(userId, data) {
   const profile = await Profile.create(data);
   user.profileId = profile.id;
   await user.save();
+  triggerExtraction(userId);
   return profile;
 }
 
@@ -35,6 +46,7 @@ async function updateProfile(userId, profileId, data) {
   }
 
   await profile.update(data);
+  triggerExtraction(userId);
   return profile;
 }
 
