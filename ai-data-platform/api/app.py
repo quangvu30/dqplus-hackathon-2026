@@ -37,6 +37,10 @@ _DASHBOARD = Path(__file__).resolve().parent.parent / "dashboard" / "index.html"
 
 # Partner entity types (spec §5.1). Everything else is a startup.
 PARTNER_TYPES = ["investor", "corporation", "university", "research_institution"]
+
+# User profiles live in the separate backend DB; the platform fetches them from the
+# extract service over HTTP (GET /extracted/:userId) for the by-user /matches routes.
+EXTRACT_SERVICE_URL = os.environ.get("EXTRACT_SERVICE_URL", "http://extract:3003").rstrip("/")
 _QUERY_WORDS = re.compile(r"[a-z0-9][a-z0-9_-]{1,}", re.I)
 
 
@@ -428,6 +432,88 @@ async def match_investor_to_founders(user_id: str, body: dict,
     it is embedded and KNN-searched against the startup corpus, then attribute-rescored."""
     return await _rag_match(user_id, "investor", body, ["startup"], types, limit, rerank,
                             sector, stage, region)
+
+
+# --- GET-by-user variants: the public interface the frontend calls (no body). ------- #
+# nginx routes /api/matches/... here (replacing the old matching-engine); the requester's
+# profile is self-fetched from extracted_profiles by gateway user id (shared DB).
+
+def _norm_from_attrs(attrs: dict) -> dict:
+    """Map an extract-agent attribute set (extracted_profiles.attributes) onto the
+    `normalized` keys the matcher's attribute_score reads (founder uses `industry`)."""
+    attrs = attrs or {}
+    return {
+        "sectors": attrs.get("sectors") or attrs.get("industry"),
+        "stage": attrs.get("stage"),
+        "stages": attrs.get("stages"),
+        "target_regions": attrs.get("target_regions"),
+        "geographies": attrs.get("geographies"),
+        "funding_ask_usd": attrs.get("funding_ask_usd"),
+        "check_size_usd": attrs.get("check_size_usd"),
+        "looking_for": attrs.get("looking_for"),
+        "description_en": attrs.get("product_description") or attrs.get("thesis"),
+    }
+
+
+def _fetch_extracted(user_id: str) -> dict | None:
+    """GET the user's extracted profile from the extract service. None on 404."""
+    import urllib.error
+    import urllib.request
+
+    req = urllib.request.Request(f"{EXTRACT_SERVICE_URL}/extracted/{user_id}",
+                                 headers={"Accept": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return json.loads(resp.read().decode())
+    except urllib.error.HTTPError as exc:
+        if exc.code == 404:
+            return None
+        raise HTTPException(502, f"extract service error: {exc.code}")
+    except urllib.error.URLError as exc:
+        raise HTTPException(502, f"extract service unreachable: {exc.reason}")
+
+
+async def _rag_match_by_user(user_id: str, default_types: list[str], types: str | None,
+                             limit: int, rerank: bool) -> dict:
+    # Blocking urllib off the event loop; profiles come from the backend via extract.
+    data = await asyncio.to_thread(_fetch_extracted, user_id)
+    if data is None:
+        # Same 404 as the old engine so the app's extract-then-retry flow still triggers.
+        raise HTTPException(404, "No extracted profile for user; run extraction first")
+    attrs = data.get("attributes") or {}
+    if isinstance(attrs, str):
+        attrs = json.loads(attrs or "{}")
+    result = await embedding_matcher.match(
+        _pool(app),
+        query_text=data.get("embedding_text") or "",
+        query_norm=_norm_from_attrs(attrs),
+        target_types=_target_types(default_types, types),
+        limit=limit,
+        rerank=rerank,
+    )
+    return {"userId": user_id, "role": data.get("role"), "matches": result["matches"]}
+
+
+@app.get("/matches/founders/{user_id}/investors")
+async def matches_founder_to_partners(user_id: str,
+                                      limit: int = Query(10, ge=1, le=50),
+                                      rerank: bool = Query(False),
+                                      types: str | None = Query(
+                                          None,
+                                          description="Comma-separated target types. Default: all "
+                                                      "partner types (investor,corporation,"
+                                                      "university,research_institution).")):
+    return await _rag_match_by_user(user_id, PARTNER_TYPES, types, limit, rerank)
+
+
+@app.get("/matches/investors/{user_id}/founders")
+async def matches_investor_to_startups(user_id: str,
+                                       limit: int = Query(10, ge=1, le=50),
+                                       rerank: bool = Query(False),
+                                       types: str | None = Query(
+                                           None, description="Comma-separated target types. "
+                                                             "Default: 'startup'.")):
+    return await _rag_match_by_user(user_id, ["startup"], types, limit, rerank)
 
 
 # --------------------------------------------------------------------------- #

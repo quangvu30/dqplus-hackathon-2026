@@ -79,11 +79,16 @@ def attribute_score(query_norm: dict, cand_norm: dict) -> tuple[float, list[str]
 
 
 # ── pgvector RAG match ─────────────────────────────────────────────────────────────
-async def match(pool, *, query_profile: dict, target_types: list[str], limit: int,
+async def match(pool, *, query_profile: dict | None = None, query_text: str | None = None,
+                query_norm: dict | None = None, target_types: list[str], limit: int,
                 filters: dict | None = None, rerank: bool = False,
                 vector_weight: float = 0.7, attr_weight: float = 0.3) -> dict:
-    query_norm = _normalized(query_profile)
-    vec = await embed_text(entity_text(query_profile))
+    # query_text/query_norm let a caller supply a pre-built text + normalized dict (e.g. a
+    # gateway user's extracted_profiles row); otherwise both are derived from query_profile.
+    if query_norm is None:
+        query_norm = _normalized(query_profile or {})
+    source_text = query_text if query_text is not None else entity_text(query_profile or {})
+    vec = await embed_text(source_text)
     vec_literal = "[" + ",".join(str(x) for x in vec) + "]"
 
     conditions = ["type = ANY($2)", "embedding IS NOT NULL"]
