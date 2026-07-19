@@ -1,0 +1,317 @@
+{
+  "entity_type": "mentor",
+  "profile": {
+    "name": {
+      "value": "Endeavor Vietnam",
+      "source_url": "https://vietnam.endeavor.org/",
+      "confidence": "high"
+    },
+    "aliases": {
+      "value": ["Endeavor Vietnam Office", "EndeavorVN"],
+      "source_url": "https://vietnam.endeavor.org/",
+      "confidence": "high"
+    },
+    "website": {
+      "value": "https://vietnam.endeavor.org/",
+      "source_url": "https://vietnam.endeavor.org/",
+      "confidence": "high"
+    },
+    "country": {
+      "value": "Vietnam",
+      "source_url": "https://vietnam.endeavor.org/about-us/contact/",
+      "confidence": "high"
+    },
+    "city": {
+      "value": "Ho Chi Minh City",
+      "source_url": "https://vietnam.endeavor.org/about-us/contact/",
+      "confidence": "high"
+    },
+    "address": {
+      "value": "24th floor, Up-Coworking Space Deutsches Haus – 33 Le Duan, Ben Nghe Ward, District 1, HCMC, Vietnam",
+      "source_url": "https://vietnam.endeavor.org/about-us/contact/",
+      "confidence": "high"
+    },
+    "entity_subtype": {
+      "value": "nonprofit_mentorship_organization",
+      "source_url": "https://vietnam.endeavor.org/about-us/",
+      "confidence": "high"
+    },
+    "description": {
+      "value": "Endeavor Vietnam is the Vietnam office of Endeavor, the leading global community of, by, and for High-Impact Entrepreneurs. It selects, mentors, and accelerates the fastest-growing founders in Vietnam through its flagship Scale Up Program, Endeavor AI Lab, and the Endeavor Entrepreneur selection process. Endeavor Vietnam provides entrepreneurs access to a global network of mentors, investors, and partners, and co-invests through the Endeavor Catalyst fund. The organization screens 100k+ companies globally, and its Vietnam portfolio includes unicorns such as Sky Mavis, alongside high-growth companies like Trusting Social (fintech), Scommerce (logistics), Katalon (enterprise SaaS), NextPay (fintech), and OnPoint (e-commerce).",
+      "source_url": "https://vietnam.endeavor.org/about-us/",
+      "confidence": "high"
+    },
+    "founded_year_global": {
+      "value": 1997,
+      "source_url": "https://en.wikipedia.org/wiki/Endeavor_(non-profit)",
+      "confidence": "high"
+    },
+    "founded_year_vietnam": {
+      "value": 2018,
+      "source_url": "https://aeroleads.com/c/endeavor-vietnam",
+      "confidence": "medium"
+    },
+    "sectors": {
+      "value": [
+        "fintech",
+        "saas",
+        "logistics",
+        "enterprise_software",
+        "edtech",
+        "healthcare",
+        "food_and_beverage",
+        "retail_and_consumer_tech",
+        "blockchain",
+        "gaming",
+        "ecommerce"
+      ],
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/",
+      "confidence": "high"
+    },
+    "key_sectors_for_mentorship": {
+      "value": ["fintech", "enterprise_software_and_services", "logistics", "edtech", "retail_and_consumer_tech"],
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/",
+      "confidence": "high"
+    },
+    "managing_director": {
+      "value": "Nguyen Lan Anh",
+      "source_url": "https://vietnam.endeavor.org/about-us/team/",
+      "confidence": "high"
+    },
+    "team_size": {
+      "value": 6,
+      "source_url": "https://vietnam.endeavor.org/about-us/team/",
+      "confidence": "high"
+    },
+    "email": {
+      "value": "vietnam@endeavor.org",
+      "source_url": "https://vietnam.endeavor.org/about-us/contact/",
+      "confidence": "high"
+    },
+    "social_media": {
+      "linkedin": {
+        "value": "https://www.linkedin.com/company/endeavor-vietnam",
+        "source_url": "https://vietnam.endeavor.org/about-us/team/",
+        "confidence": "high"
+      },
+      "youtube": {
+        "value": "https://www.youtube.com/@EndeavorVietnam",
+        "source_url": "https://vietnam.endeavor.org/about-us/team/",
+        "confidence": "high"
+      },
+      "facebook": {
+        "value": "https://www.facebook.com/EndeavorVN/",
+        "source_url": "https://vietnam.endeavor.org/about-us/team/",
+        "confidence": "high"
+      }
+    },
+    "programs": {
+      "value": [
+        "Scale Up Program (3-month growth program for $1M+ ARR tech startups)",
+        "Endeavor AI Lab (AI-focused startup program with mentorship and fundraising support)",
+        "Endeavor Entrepreneur Selection (lifelong global network membership via International Selection Panel)",
+        "Endeavor Catalyst co-investment fund"
+      ],
+      "source_url": "https://vietnam.endeavor.org/scale-up-by-endeavor/",
+      "confidence": "high"
+    },
+    "mentor_count_estimated": {
+      "value": "50+ listed on website",
+      "source_url": "https://vietnam.endeavor.org/community/mentors/",
+      "confidence": "medium"
+    },
+    "portfolio_company_count": {
+      "value": 18,
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/",
+      "confidence": "high"
+    },
+    "board_members": {
+      "value": [
+        "Nam Nguyen (Chairman, Funix)",
+        "Pham Minh Huong (Chairman, VNDIRECT)",
+        "David Do (Managing Director Private Equity, VIGROUP)",
+        "Cong Phan (Chairman, Saigon Food & UniBrands)",
+        "Vu Lam (Founder & CEO, Katalon — Endeavor Entrepreneur)",
+        "Le Tran (CEO, Nutifood)",
+        "To Hong Trang (Co-founder, Deputy General Director, Digiworld)",
+        "Nguyen Lan Anh (Managing Director, Endeavor Vietnam)",
+        "Luke Nguyen (Founding Partner, Earth Venture Capital — Endeavor Entrepreneur)"
+      ],
+      "source_url": "https://vietnam.endeavor.org/community/board/",
+      "confidence": "high"
+    },
+    "global_parent": {
+      "value": {
+        "name": "Endeavor Global",
+        "type": "nonprofit",
+        "headquarters": "New York City, USA",
+        "founders": ["Linda Rottenberg", "Peter Kellner"],
+        "global_entrepreneurs": "3,000+",
+        "markets": "45+"
+      },
+      "source_url": "https://en.wikipedia.org/wiki/Endeavor_(non-profit)",
+      "confidence": "high"
+    },
+    "legal_structure": {
+      "value": "Non-profit organization (part of Endeavor Global, Inc., a US 501(c)(3))",
+      "source_url": "https://www.guidestar.org/profile/13-3931449",
+      "confidence": "high"
+    },
+    "funding_mechanism": {
+      "value": "Endeavor Catalyst — rules-based co-investment fund investing in Endeavor Entrepreneur-led companies; 200+ investments across 30+ markets; does not take equity from entrepreneurs at selection",
+      "source_url": "https://vietnam.endeavor.org/endeavor-catalyst-fund/",
+      "confidence": "high"
+    },
+    "selection_criteria": {
+      "value": "Founder must be a founder; company based in Vietnam; product-market fit with $1M+ ARR (Scale Up) or $100k+ ARR (AI Lab); tech-enabled solution (not service-based); high growth potential",
+      "source_url": "https://vietnam.endeavor.org/scale-up-by-endeavor/",
+      "confidence": "high"
+    },
+    "phone": {
+      "value": null,
+      "source_url": null,
+      "confidence": "unavailable"
+    },
+    "tax_id": {
+      "value": null,
+      "source_url": null,
+      "confidence": "unavailable"
+    },
+    "registration_number": {
+      "value": null,
+      "source_url": null,
+      "confidence": "unavailable"
+    }
+  },
+  "relationships": [
+    {
+      "kind": "invested_in",
+      "dst_name": "Trusting Social",
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/"
+    },
+    {
+      "kind": "invested_in",
+      "dst_name": "Scommerce (Giaohangnhanh / GHN)",
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/"
+    },
+    {
+      "kind": "invested_in",
+      "dst_name": "Katalon",
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/"
+    },
+    {
+      "kind": "invested_in",
+      "dst_name": "NextPay",
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/"
+    },
+    {
+      "kind": "invested_in",
+      "dst_name": "Sky Mavis",
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/"
+    },
+    {
+      "kind": "invested_in",
+      "dst_name": "ELSA",
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/"
+    },
+    {
+      "kind": "invested_in",
+      "dst_name": "OnPoint",
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/"
+    },
+    {
+      "kind": "invested_in",
+      "dst_name": "Amanotes",
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/"
+    },
+    {
+      "kind": "invested_in",
+      "dst_name": "Athena Studio",
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/"
+    },
+    {
+      "kind": "invested_in",
+      "dst_name": "Rikkeisoft",
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/"
+    },
+    {
+      "kind": "invested_in",
+      "dst_name": "Sky Mavis / Axie Infinity",
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/"
+    },
+    {
+      "kind": "invested_in",
+      "dst_name": "UrBox",
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/"
+    },
+    {
+      "kind": "invested_in",
+      "dst_name": "VUIHOC.vn",
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/"
+    },
+    {
+      "kind": "invested_in",
+      "dst_name": "BuyMed (Thuocsi)",
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/"
+    },
+    {
+      "kind": "invested_in",
+      "dst_name": "30Shine",
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/"
+    },
+    {
+      "kind": "invested_in",
+      "dst_name": "Ohmnilabs",
+      "source_url": "https://vietnam.endeavor.org/entrepreneur-companies/"
+    },
+    {
+      "kind": "partner_with",
+      "dst_name": "Endeavor Global",
+      "source_url": "https://endeavor.org/"
+    },
+    {
+      "kind": "partner_with",
+      "dst_name": "Endeavor Catalyst",
+      "source_url": "https://vietnam.endeavor.org/endeavor-catalyst-fund/"
+    },
+    {
+      "kind": "partner_with",
+      "dst_name": "Endeavor Insight",
+      "source_url": "https://vietnam.endeavor.org/"
+    }
+  ],
+  "collection_summary": {
+    "sources_consulted": [
+      "https://vietnam.endeavor.org/",
+      "https://vietnam.endeavor.org/about-us/",
+      "https://vietnam.endeavor.org/about-us/team/",
+      "https://vietnam.endeavor.org/about-us/contact/",
+      "https://vietnam.endeavor.org/community/",
+      "https://vietnam.endeavor.org/community/mentors/",
+      "https://vietnam.endeavor.org/community/board/",
+      "https://vietnam.endeavor.org/entrepreneur-companies/",
+      "https://vietnam.endeavor.org/entrepreneur-experience/",
+      "https://vietnam.endeavor.org/scale-up-by-endeavor/",
+      "https://vietnam.endeavor.org/endeavor-ai-lab/",
+      "https://vietnam.endeavor.org/endeavor-catalyst-fund/",
+      "https://endeavor.org/",
+      "https://endeavor.org/about-us/",
+      "https://en.wikipedia.org/wiki/Endeavor_(non-profit)",
+      "https://www.guidestar.org/profile/13-3931449",
+      "https://endeavor.org/wp-content/uploads/2024/09/Endeavor-Overview_2024.pdf",
+      "https://aeroleads.com/c/endeavor-vietnam",
+      "https://vietnam.endeavor.org/coolmate-and-topcv-join-endeavor-vietnam-network/"
+    ],
+    "collection_date": "2026-07-19",
+    "confidence_assessment": "high — most fields verified against official Endeavor Vietnam website (vietnam.endeavor.org), Endeavor Global website, and Wikipedia. Phone, tax_id, and registration_number were not publicly available on any source consulted.",
+    "notes": [
+      "The hint website endeavor.org.vn redirects to vietnam.endeavor.org (the official domain).",
+      "Endeavor Vietnam operates as a local office of Endeavor Global, a US 501(c)(3) non-profit founded in 1997.",
+      "The organization does not take equity; it provides mentorship, network access, and co-investment through Endeavor Catalyst.",
+      "The Vietnam office was established around 2018 with a team of 6 led by Managing Director Nguyen Lan Anh.",
+      "Portfolio includes notable Vietnamese unicorn Sky Mavis and high-growth fintech Trusting Social.",
+      "Scale Up program requires $1M+ ARR; AI Lab requires $100k+ ARR.",
+      "Mentors listed on the website include senior executives from VIB, Deloitte, EY, CBRE, SSI, ACB, VNG, Bain & Company, Baker & McKenzie, Unilever, Golden Gate Ventures, and many others."
+    ]
+  }
+}
