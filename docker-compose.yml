@@ -17,5 +17,57 @@ services:
       timeout: 3s
       retries: 10
 
+  backendv2:
+    build:
+      context: ./backendv2
+    container_name: dqplus-backendv2
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: 4000
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+      DB_NAME: ${DB_NAME:-gateway}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1d}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://mkp-api.fptcloud.com}
+      OPENAI_CHAT_MODEL: ${OPENAI_CHAT_MODEL:-gemma-4-31B-it}
+      OPENAI_EMBEDDING_MODEL: ${OPENAI_EMBEDDING_MODEL:-multilingual-e5-large}
+      EMBEDDING_DIM: ${EMBEDDING_DIM:-1024}
+      MATCH_VECTOR_WEIGHT: ${MATCH_VECTOR_WEIGHT:-0.7}
+      MATCH_ATTR_WEIGHT: ${MATCH_ATTR_WEIGHT:-0.3}
+      MATCH_CANDIDATE_POOL: ${MATCH_CANDIDATE_POOL:-50}
+      PIPELINE_POLL_MS: ${PIPELINE_POLL_MS:-1000}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      MAIL_FROM: ${MAIL_FROM:-VietNexus <no-reply@vietnexus.local>}
+      UPLOAD_DIR: uploads
+    ports:
+      - "${BACKEND_PORT:-4000}:4000"
+    volumes:
+      - backendv2-uploads:/app/uploads
+
+  fev2:
+    build:
+      context: ./fev2
+    container_name: dqplus-fev2
+    depends_on:
+      - backendv2
+    environment:
+      BACKEND_URL: http://backendv2:4000
+    ports:
+      - "${FRONTEND_PORT:-5174}:5174"
+    volumes:
+      - ./fev2:/app
+      - /app/node_modules
+
 volumes:
   pgdata:
+  backendv2-uploads:

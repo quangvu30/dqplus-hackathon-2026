@@ -1,0 +1,203 @@
+/* Match/browse card list — used by Browse.jsx (recommended/all/AI-filter tabs)
+ * and the profile detail header. Ported from /frontend/src/views/matches.css
+ * (dropped during the fev2 rebuild) and extended with hover/press/focus states. */
+
+.vn-match-tabs {
+  flex-wrap: wrap;
+}
+
+.vn-match-list {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vn-match-card,
+.vn-match-card:hover,
+.vn-match-card:active,
+.vn-match-card:visited {
+  text-decoration: none;
+  color: inherit;
+}
+
+.vn-match-card {
+  display: grid;
+  grid-template-columns: 40px 56px 1fr auto;
+  gap: 18px;
+  align-items: center;
+  padding: 20px 22px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.15s, box-shadow 0.2s,
+    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vn-match-card:hover {
+  border-color: var(--input-border-hover);
+  box-shadow: 0 6px 20px rgba(31, 122, 92, 0.08);
+  transform: translateY(-2px);
+}
+
+.vn-match-card:active {
+  transform: translateY(0) scale(0.99);
+  box-shadow: var(--shadow-card);
+  transition-duration: 0.08s;
+}
+
+.vn-match-card:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.vn-match-rank {
+  color: var(--faint);
+  font: 600 13px var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.vn-match-score {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 13px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font: 600 19px var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  flex: none;
+}
+
+.vn-match-type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.vn-match-name {
+  margin: 6px 0 4px;
+  font: 400 20px var(--font-serif);
+  color: var(--heading);
+  text-wrap: balance;
+}
+
+.vn-match-rationale {
+  margin: 0;
+  color: var(--text);
+  font-size: 13.5px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.vn-match-analysis {
+  display: inline-flex;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: transform 0.15s;
+}
+
+.vn-match-card:hover .vn-match-analysis {
+  transform: translateX(2px);
+}
+
+.vn-match-empty {
+  margin-top: 22px;
+  padding: 28px 22px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+/* skeleton loading state, matches the card grid so layout doesn't jump */
+.vn-match-skeleton {
+  display: grid;
+  grid-template-columns: 40px 56px 1fr auto;
+  gap: 18px;
+  align-items: center;
+  padding: 20px 22px;
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  background: var(--card);
+}
+
+.vn-match-skeleton-block {
+  border-radius: 13px;
+  background: linear-gradient(90deg, var(--hairline) 25%, var(--border-soft) 50%, var(--hairline) 75%);
+  background-size: 200% 100%;
+  animation: vn-shimmer 1.4s ease-in-out infinite;
+}
+
+.vn-match-skeleton .vn-match-skeleton-block:first-child {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+}
+
+.vn-match-skeleton-score {
+  width: 52px;
+  height: 52px;
+}
+
+.vn-match-skeleton-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vn-match-skeleton-lines .vn-match-skeleton-block:nth-child(1) {
+  width: 40%;
+  height: 10px;
+}
+
+.vn-match-skeleton-lines .vn-match-skeleton-block:nth-child(2) {
+  width: 65%;
+  height: 18px;
+}
+
+.vn-match-skeleton-lines .vn-match-skeleton-block:nth-child(3) {
+  width: 90%;
+  height: 12px;
+}
+
+@keyframes vn-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vn-match-skeleton-block {
+    animation: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .vn-match-card {
+    grid-template-columns: 32px 44px 1fr;
+  }
+  .vn-match-analysis {
+    display: none;
+  }
+  .vn-match-skeleton {
+    grid-template-columns: 32px 44px 1fr;
+  }
+}
